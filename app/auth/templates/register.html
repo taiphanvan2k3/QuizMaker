@@ -1,0 +1,12 @@
+{# Nạp layout vào để dùng #}
+{% extends '_layout.html' %}
+
+{# Thay thế nội dung của block content trong layout.html bằng nội dung mới #}
+{% block content %}
+<h1>Section Classes</h1>
+<ul>
+    {% for section_class in section_classes %}
+        <li>{{section_class.name}}, created by: {{section_class.created_by}}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
