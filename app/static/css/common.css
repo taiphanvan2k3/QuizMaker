@@ -1,3 +1,42 @@
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --header-bg: #10375C;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-size: 1.6rem;
+    font-family: 'Roboto', sans-serif;
+}
+
 .container {
     max-width: 100%;
+    background-color: #d9dde8;
+    padding: 0;
+}
+
+/* Header */
+.container .top-navigation {
+    background-color: #fff;
+}
+
+.container .top-navigation .left-content {
+    display: flex;
+    align-items: center;
+}
+
+.container .top-navigation .left-content .logo {
+    width: 120px;
+    height: 110px;
+}
+
+.container .navigation-tabs .items {
+    display: flex;
+    gap: 10px;
 }

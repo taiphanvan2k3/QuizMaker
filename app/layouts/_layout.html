@@ -23,6 +23,12 @@
         <meta name="msapplication-TileImage" content="/static/favicon/ms-icon-144x144.png">
         <meta name="theme-color" content="#ffffff">
         
+        <!-- Reset css -->
+        <link rel="stylesheet" href="{{url_for('static', filename='css/reset.css')}}">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="{{url_for('static', filename='fonts/stylesheet.css')}}">
+
         <!-- CSS files -->
         <link rel="stylesheet" href="{{url_for('static', filename='libraries/css/bootstrap.css')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='css/common.css')}}">
@@ -32,8 +38,24 @@
     </head>
     <body>
         <div class="container">
-            <header>
-                <!-- Header content -->
+            <header class="top-navigation">
+                <div class="content">
+                    <div class="left-content">
+                        <div>
+                            <img src="{{url_for('static', filename='images/logo.png')}}" alt="" class="logo">
+                        </div>
+                        <div class="navigation-tabs">
+                            <ul class="items">
+                                <li>Trang chủ</li>
+                                <li>Danh sách học phần của bạn</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="middle-content"></div>
+                    <div class="right-content">
+
+                    </div>
+                </div>
             </header>
     
             <div class="main-content">{% block content %} {% endblock %}</div>
