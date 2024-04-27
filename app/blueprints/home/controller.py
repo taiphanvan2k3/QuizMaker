@@ -5,5 +5,5 @@ from ..utils.helpers import render_template_util
 @home_bp.route("/")
 def index():
     return render_template_util(
-        env, "index.html", title="Home"
+        env, "index.html", title="Home", active_menu="home"
     )

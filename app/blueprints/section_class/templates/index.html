@@ -1,4 +1,11 @@
 {% extends '_layout.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/section_class/index.css')}}">
+{% endblock %}
+
 {% block content %}
-    <h1>Danh sách các lớp học phần của bạn</h1>
+    <div class="wrapper">
+        <h1 class="title">Danh sách các lớp học phần của bạn</h1>
+    </div>
 {% endblock  %}

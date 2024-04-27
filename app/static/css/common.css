@@ -21,22 +21,114 @@ body {
     padding: 0;
 }
 
+a {
+    text-decoration: none;
+    color: #000;
+}
+
 /* Header */
 .container .top-navigation {
     background-color: #fff;
+    position: sticky;
+    top: 0;
+}
+
+.container .top-navigation .content {
+    display: flex;
 }
 
 .container .top-navigation .left-content {
     display: flex;
     align-items: center;
+    width: 30%;
 }
 
 .container .top-navigation .left-content .logo {
-    width: 120px;
-    height: 110px;
+    width: 100px;
+    height: 80px;
 }
 
 .container .navigation-tabs .items {
     display: flex;
-    gap: 10px;
+    gap: 30px;
+    align-items: center;
+}
+
+.container .navigation-tabs .items li {
+    font-weight: 500;
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+.container .navigation-tabs .items li.active {
+    position: relative;
+}
+
+.container .navigation-tabs .items li.active::after {
+    position: absolute;
+    content: " ";
+    display: inline-block;
+    width: 100%;
+    height: 3px;
+    background-color: #a8b1ff;
+    left: 0;
+    bottom: 0;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+}
+
+.container .top-navigation .middle-content {
+    width: 50%;
+}
+
+.container .top-navigation .middle-content .search-box {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.container .top-navigation .middle-content .search-box .icon {
+    position: absolute;
+    left: 10px;
+    font-size: 1.6rem;
+}
+
+.container .top-navigation .middle-content input {
+    width: 80%;
+    font-size: 1.6rem;
+    padding-left: 40px;
+    border-radius: 16px;
+}
+
+.container .top-navigation .right-content {
+    width: 20%;
+}
+
+.container .top-navigation .right-content .icon {
+    font-size: 1.6rem;
+    width: 3.8rem;
+    height: 3.65rem;
+    margin-right: 10px;
+}
+
+.container .right-content .btn-notification {
+    border: 2px solid #d9dde8;
+    border-radius: 50%;
+}
+
+.container .right-content .btn-profile {
+    border: none;
+    padding: 0;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.container .right-content .avatar {
+    width: 3.8rem;
+    height: 3.65rem;
+}
+
+.container .main-content {
+    min-height: 100vh;
+    padding: 0 48px;
 }
