@@ -1,8 +1,9 @@
 from flask import Flask
+
 # Đăng ký các Blueprint
-from .auth import auth_bp
-from .section_class import section_class_bp
-from .home import home_bp
+from .blueprints.auth import auth_bp
+from .blueprints.section_class import section_class_bp
+from .blueprints.home import home_bp
 
 def create_app():
     app = Flask(__name__)

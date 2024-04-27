@@ -1,0 +1,11 @@
+{% extends '_layout.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home/index.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h1>Welcome to the Home Page</h1>
+    <button class="btn btn-primary">Hello</button>
+    <button class="btn btn-primary">Xin chào</button>
+{% endblock %}
