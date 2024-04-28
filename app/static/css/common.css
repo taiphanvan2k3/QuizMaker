@@ -17,7 +17,7 @@ body {
 
 .container {
     max-width: 100%;
-    background-color: #d9dde8;
+    background-color: #f6f7fb;
     padding: 0;
 }
 
@@ -31,6 +31,7 @@ a {
     background-color: #fff;
     position: sticky;
     top: 0;
+	z-index: 10000;
 }
 
 .container .top-navigation .content {

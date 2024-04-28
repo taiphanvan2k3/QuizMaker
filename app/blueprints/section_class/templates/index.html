@@ -4,8 +4,35 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/section_class/index.css')}}">
 {% endblock %}
 
+{% block script %}
+    <script>
+        var urls = {
+            sectionClassList: "{{url_for('section_class.index')}}",
+        }
+    </script>
+    <script src="{{url_for('static', filename='js/section_class/index.js')}}"></script>
+{% endblock %}
+
 {% block content %}
     <div class="wrapper">
         <h1 class="title">Danh sách các lớp học phần của bạn</h1>
+        <div class="header">
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  {{"Tất cả" if sectionType == "all" else "Tự tạo"}}
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a class="dropdown-item" data-val="all">Tất cả</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" data-val="created-by-self">Tự tạo</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="section-list">
+            {% include 'partials/_sectionsList.html' %}
+        </div>
     </div>
 {% endblock  %}

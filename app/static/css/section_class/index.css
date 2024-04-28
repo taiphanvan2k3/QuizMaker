@@ -1,3 +1,44 @@
 .main-content .wrapper .title {
     margin-top: 40px;
 }
+
+.main-content .header .dropdown-toggle,
+.main-content .header .dropdown-item {
+    font-size: 1.4rem;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.main-content .header {
+    padding-bottom: 32px;
+}
+
+.main-content .header .dropdown-toggle {
+    background: transparent;
+    border: 2px solid #a7a9af;
+    color: #586380;
+}
+
+.main-content .header .dropdown-menu {
+    width: 150px;
+}
+
+/* Section item */
+.sections-block .section-item {
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    padding: 20px;
+    width: 90%;
+    border-bottom: 4px solid transparent;
+    transition: border-bottom-color 0.3s;
+}
+
+.sections-block .section-item:hover {
+    border-bottom-color: #a8b1ff;
+}
+
+.sections-block .section-item__vocab-count {
+    margin-right: 15px;
+}
