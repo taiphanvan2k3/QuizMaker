@@ -1,0 +1,15 @@
+<div class="sections-block">
+    <div class="section">
+        {% for section in sections %}
+            <div class="section-item" id="{{section.id}}">
+                <div class="section-item__header">
+                    <b class="section-item__vocab-count">{{section.vocab_count}} thuật ngữ</b>
+                    <b class="section-item__created-by">{{section.created_by}}</b>
+                </div>
+                <div class="section-item__name">
+                    <b>{{section.name}}</b>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

@@ -49,5 +49,14 @@
                 <!-- Footer content -->
             </footer>
         </div>
+
+        <!-- JS files -->
+        <script src="/static/libraries/jquery/jquery-3.2.1.min.js"></script>
+        <script src="/static/libraries/bootstrap/js/popper.min.js"></script>
+        <script src="/static/libraries/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/static/js/common.js"></script>
+
+        <!-- Chèn file JS tại 1 dùng cho 1 trang -->
+        {% block script %}{% endblock %}
     </body>
 </html>
