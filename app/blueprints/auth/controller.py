@@ -17,6 +17,7 @@ def register():
 def login():
     current_user = g.user_info
     if current_user:
+        # Nếu user đã đăng nhập thì chuyển hướng về trang trước đó
         return redirect(session.get("redirected_from", "/"))
     return render_template_util(env, "login.html", title="Đăng nhập")
 
