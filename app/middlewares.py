@@ -1,36 +1,47 @@
-from flask import request, g
-from functools import wraps
-from firebase_admin import firestore
+from flask import request, g, session, redirect, url_for
 from .blueprints.utils.firestore_utils import initialize_firestore
+from functools import wraps
 
-# Initialize Firestore DB
 db = initialize_firestore()
+login_endpoint = "auth.login"
 
-
-# Middleware to fetch user information
 def fetch_user_info_middleware():
+    """
+    Middleware to fetch user info from Firestore before each request
+    Author: Phan Van Tai, created at: 29/04/2024
+    """
     # Check if the request is not for static files
     if not request.endpoint or request.endpoint.startswith("static"):
         return
 
-    access_token = request.cookies.get("access_token")
+    if request.endpoint.startswith("auth") and request.endpoint != login_endpoint:
+        return
 
-    # Fetch user information from Firestore based on user_id
-    if access_token:
-        access_token_ref = (
-            db.collection("access_tokens")
-            .where("access_token", "==", access_token)
-            .order_by("expires_at", direction=firestore.Query.DESCENDING)
-            .limit(1)
-        )
+    if request.endpoint != login_endpoint:
+        session["redirected_from"] = request.url
 
-        access_token_ref = access_token_ref.get()
-        if len(access_token_ref) > 0:
-            user_id = access_token_ref[0].to_dict()["user_id"]
-            user_ref = db.collection("users").document(user_id)
-            user = user_ref.get()
-            if user.exists:
-                g.user_info = user.to_dict()
+    user_id = request.cookies.get("user_id")
+    if user_id:
+        user_ref = db.collection("users").document(user_id)
+        user = user_ref.get()
+        if user:
+            g.user_info = user.to_dict()
+        else:
+            g.user_info = None
     else:
-        # Handle case where user_id is not provided
         g.user_info = None
+
+
+def login_required(view):
+    """
+    Middleware to check if the user is logged in or not
+    Author: Phan Van Tai, created at: 29/04/2024
+    """
+
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if g.user_info is None:
+            return redirect(url_for(login_endpoint))
+        return view(*args, **kwargs)
+
+    return wrapped_view

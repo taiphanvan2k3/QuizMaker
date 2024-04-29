@@ -17,9 +17,11 @@
                 <li class="{{'active' if active_menu == 'home' else ''}}">
                     <a href="{{url_for('home.index')}}">Trang chủ</a>
                 </li>
-                <li class="{{'active' if active_menu == 'section_class' else ''}}">
-                    <a href="{{url_for('section_class.index')}}">Danh sách học phần</a>
-                </li>
+                {% if g.user_info %}
+                    <li class="{{'active' if active_menu == 'section_class' else ''}}">
+                        <a href="{{url_for('section_class.index')}}">Danh sách học phần</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -36,25 +38,19 @@
         <button class="btn btn-notification icon">
             <i class="fa-regular fa-bell"></i>
         </button>
-        <span id="user-name"></span>
-        <span id="user-email"></span>
-        <!-- <button class="btn-profile m-l-10 m-r-10">
-            <img src="{{url_for('static', filename='images/default_user_img.jpg')}}" alt="" class="avatar">
-        </button> -->
+        <span id="user-name">{{g.user_info.display_name if g.user_info else "Guest"}}</span>
         <div class="btn-group m-l-10 m-r-10">
             <button class="btn btn-profile" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{{url_for('static', filename='images/default_user_img.jpg')}}" alt="" class="avatar">
+                <img src="{{g.user_info.picture if g.user_info.picture else url_for('static', filename='images/default_user_img.jpg')}}" alt="" class="avatar">
             </button>
             <ul class="dropdown-menu">
-                <li><a class="dropdown-item" id="profile" href="#">Profile</a></li>
-                <li><a class="dropdown-item" id="logout" href="{{ url_for('auth.logout') }}">Log out</a></li>
-                <li><a class="dropdown-item" id="login" href="{{ url_for('auth.login') }}" style="display: none;">Log in</a></li>
+                {% if g.user_info %}
+                    <li><a class="dropdown-item" id="profile" href="#">Thông tin cá nhân</a></li>
+                    <li><a class="dropdown-item" id="logout" href="{{ url_for('auth.logout') }}">Đăng xuất</a></li>
+                {% else %}
+                    <li><a class="dropdown-item" id="login" href="{{ url_for('auth.login') }}">Đăng nhập</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>
 </div>
-<script src="/static/libraries/jquery/jquery-3.2.1.min.js"></script>
-<script src="/static/libraries/bootstrap/js/popper.js"></script>
-<script src="/static/libraries/bootstrap/js/bootstrap.min.js"></script>
-<script src="/static/libraries/js-cookie/js.cookie.min.js"></script>
-<script src="/static/js/layouts/layouts.js"></script>

@@ -1,8 +1,7 @@
-from . import auth_bp, env, oauth, url_for
+from . import auth_bp, env, oauth
 from . import model
 from ..utils.helpers import render_template_util
-from flask import redirect, session, make_response, request, g
-import json
+from flask import redirect, make_response, g, url_for, session
 
 
 # Route cho trang chủ
@@ -16,11 +15,9 @@ def register():
 
 @auth_bp.route("/login")
 def login():
-    temp = g.user_info
-    # Lưu URL trước đó vào session
-    session["previous_url"] = "/" if request.referrer is None else request.referrer
-    if "user_info" in session and "user_info" in request.cookies:
-        return redirect(session.pop("previous_url", "/"))
+    current_user = g.user_info
+    if current_user:
+        return redirect(session.get("redirected_from", "/"))
     return render_template_util(env, "login.html", title="Đăng nhập")
 
 
@@ -34,26 +31,21 @@ def google_login():
 @auth_bp.route("/authorize")
 def authorize():
     google = oauth.create_client("google")
-    token = google.authorize_access_token()
+    google.authorize_access_token()
     resp = google.get("userinfo")
     user_info = resp.json()
 
     # Lưu thông tin user vào Firestore
     model.create_user_if_not_exist(user_info)
-    model.save_access_token(user_info["id"], token["access_token"], token["expires_in"])
 
     # Lưu thông tin user vào session và cookie
-    user_info_str = json.dumps(user_info)
-    session["user_info"] = user_info_str
     response = make_response(redirect("/"))
-
-    response.set_cookie("user_info", user_info_str, max_age=3600)
-    response.set_cookie("access_token", token["access_token"], max_age=3600, httponly=True)
+    response.set_cookie("user_id", user_info["id"], max_age=3600, path="/", httponly=True)
     return response
 
 
 @auth_bp.route("/logout")
 def logout():
     response = make_response(redirect("/"))
-    response.delete_cookie("user_info", path="/")
+    response.delete_cookie("user_id", path="/")
     return response

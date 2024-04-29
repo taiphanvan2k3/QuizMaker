@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, g
 from datetime import timedelta
 from .extensions import oauth # Import OAuth object từ file extensions.py
 from .middlewares import fetch_user_info_middleware
@@ -13,7 +13,7 @@ from .blueprints.home import home_bp
 
 def create_app():
     app = Flask(__name__)
-    
+
     # Đăng kí middleware
     app.before_request(fetch_user_info_middleware)
 
@@ -45,4 +45,5 @@ def create_app():
     app.jinja_env.auto_reload = True
     app.config["FLASK_APP"] = "app.py"
     app.config['TEMPLATES_AUTO_RELOAD'] = True
+    
     return app

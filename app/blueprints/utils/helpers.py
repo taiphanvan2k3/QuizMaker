@@ -1,5 +1,4 @@
-from flask import render_template_string
-
+from flask import render_template_string, url_for, g
 
 def render_template_util(env, template_name, **kwargs):
     template = env.get_template(template_name)
@@ -16,7 +15,7 @@ def create_environment(file_path):
     from jinja2 import FileSystemLoader, Environment
     import os
 
-    return Environment(
+    env =  Environment(
         # Load template từ các thư mục khác nhau, dùng os.path.abspath(file_path) để tính đường dẫn
         # từ vị trí của file_path truyền vào
         loader=FileSystemLoader(
@@ -28,3 +27,6 @@ def create_environment(file_path):
             ]
         )
     )
+    env.globals["url_for"] = url_for
+    env.globals["g"] = g
+    return env
