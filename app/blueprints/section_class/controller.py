@@ -1,9 +1,12 @@
-from . import section_class_bp, env, request, jsonify
+from . import section_class_bp, env
 from . import model
 from ..utils.helpers import render_template_util
+from ...middlewares import login_required
+from flask import request, jsonify
 
 
 @section_class_bp.route("/", methods=["GET", "POST"])
+@login_required
 def index():
     """
     * Author: Phan Van Tai, created at: 28/04/2024\n
@@ -11,13 +14,13 @@ def index():
     section classes by their types
     """
     if request.method == "GET":
-        sectionType = request.args.get("sectionType", "all")
+        section_type = request.args.get("sectionType", "all")
         return render_template_util(
             env,
             "index.html",
             title="Danh sách học phần",
-            sections=model.get_all_section_classes(sectionType),
-            sectionType=sectionType,
+            sections=model.get_all_section_classes(section_type),
+            sectionType=section_type,
         )
     elif request.method == "POST":
         response_info = {}
