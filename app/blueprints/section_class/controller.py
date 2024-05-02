@@ -45,6 +45,7 @@ def index():
 
 
 @section_class_bp.route("/create", methods=["GET", "POST"])
+@login_required
 def create_set():
     """
     * Author: Phan Van Tai, created at: 28/04/2024
@@ -54,5 +55,5 @@ def create_set():
         return render_template_util(
             env,
             "create.html",
-            title="Tạo học phần",
+            title="Tạo học phần mới",
         )
