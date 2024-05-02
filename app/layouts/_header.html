@@ -32,9 +32,25 @@
         </div>
     </div>
     <div class="right-content flex-r-m">
-        <button class="btn btn-primary rounded-circle icon">
-            <i class="fa-solid fa-plus"></i>
-        </button>
+        <div class="btn-group">
+            <button class="btn btn-primary rounded-circle icon" data-bs-toggle="dropdown" data-bs-offset="0,5" aria-expanded="false">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <a href="{{url_for('section_class.create_set')}}">
+                    <li class="dropdown-item">
+                        <i class="fa-solid fa-laptop-file"></i>
+                        Học phần
+                    </li>
+                </a>
+                <a href="{{url_for('section_class.create_set')}}">
+                    <li class="dropdown-item">
+                        <i class="fa-solid fa-user-group"></i>
+                        Lớp học
+                    </li>
+                </a>
+            </ul>
+        </div>
         <button class="btn btn-notification icon">
             <i class="fa-regular fa-bell"></i>
         </button>

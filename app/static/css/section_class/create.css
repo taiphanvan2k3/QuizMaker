@@ -1,0 +1,142 @@
+.btn-create {
+    font-size: 1.5rem;
+    padding: 5px 15px;
+}
+
+button {
+    background-color: transparent;
+}
+
+.form-control {
+    font-size: 1.6rem;
+    padding: 6px 10px;
+    border-radius: 5px;
+}
+
+.container .top-navigation {
+    position: relative;
+}
+
+.header .content,
+.main-content>.wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+.main-content>.wrapper {
+    padding: 0 4px;
+}
+
+.main-content>.header {
+    position: sticky;
+    top: 0;
+    padding: 0 40px;
+    background-color: #f6f7fb;
+    margin-bottom: 50px;
+    z-index: 1000;
+}
+
+.main-content>.header.fixed {
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+}
+
+.main-content>.header .content {
+    height: 60px;
+}
+
+.main-content>.header .title {
+    font-size: 2rem;
+}
+
+/* Header content */
+.header-content {
+    margin-top: 10px;
+}
+
+.header-content .row {
+    padding: 0;
+    margin-bottom: 15px;
+}
+
+.header-content .left-column {
+    margin-right: 20px;
+}
+
+.header-content .row .col-md-6 {
+    padding: 0;
+}
+
+.header-content textarea {
+    height: 100px;
+    min-height: 100px;
+    max-height: 150px;
+}
+
+/* List of vocab block */
+.vocab-list {
+    position: relative;
+    z-index: 1;
+}
+
+.vocab-list .vocab-block {
+    background-color: #fff;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.vocab-block .btn-block button i {
+    opacity: 0.8;
+}
+
+.vocab-block .header {
+    height: 66px;
+    padding: 15px 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.vocab-block .vocab-info {
+    gap: 40px;
+    margin-top: 30px;
+}
+
+.vocab-block .vocab-info .column {
+    width: 50%;
+}
+
+/* CSS cho các thẻ div contenteditable */
+.vocab-block {
+    padding: 12px 12px 24px;
+}
+
+.vocab-block .column>.input {
+    padding: 10px;
+    box-shadow: 0 .15rem 0 0 black;
+}
+
+.vocab-block .column>.input:focus {
+    box-shadow: 0 .35rem 0 0 #ffcd1f;
+    border-bottom: 0;
+}
+
+.vocab-block .column label {
+    font-weight: 600;
+    margin-top: 10px;
+    font-size: 1.2rem;
+    color: #939bb4;
+}
+
+.add-vocab-block {
+    height: 120px;
+    background: #fff;
+}
+
+.add-vocab-block button {
+    font-weight: 700;
+    padding-bottom: 10px;
+    border-bottom: 5px solid #3ccfcf;
+}
+
+.add-vocab-block button:hover {
+    border-color: #ffcd1f;
+    color: #ffcd1f;
+}
