@@ -7,4 +7,27 @@ const CommonModule = {
         }
         history.replaceState({}, "", url);
     },
+    SetDefaultAjax: function () {
+        const module = this;
+        $.ajaxSetup({
+            contentType: "application/json", // Thiết lập header Content-Type là application/json
+            processData: false, // Vô hiệu hóa xử lý dữ liệu trước khi gửi
+            beforeSend: function (jqXHR, options) {
+                if (
+                    options.contentType == "application/json" &&
+                    typeof options.data != "string"
+                ) {
+                    options.data = JSON.stringify(options.data);
+                }
+                module.SetLoading(true);
+            },
+        });
+    },
+    SetLoading: function (isLoading) {
+        if (isLoading) {
+            $("#loading-icon")?.show();
+        } else {
+            $("#loading-icon")?.hide();
+        }
+    },
 };

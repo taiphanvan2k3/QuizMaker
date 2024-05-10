@@ -20,6 +20,8 @@ const AddSectionClassModule = (function () {
     };
 
     const Init = function () {
+        CommonModule.SetDefaultAjax();
+
         // Init observer
         observer = new MutationObserver(mutationCallback);
         observer.observe(vocabList, {
@@ -36,6 +38,8 @@ const AddSectionClassModule = (function () {
         [...tooltipTriggerList].map(
             (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
         );
+
+        InitTabIndex();
     };
 
     const InitEvents = function () {
@@ -48,6 +52,30 @@ const AddSectionClassModule = (function () {
         $(".btn-delete").on("click", function () {
             HandleDeleteVocabBlock($(this));
         });
+
+        $(".btn-create").on("click", function () {
+            HandleSubmit();
+        });
+
+        // Bắt sự kiện ctrl S
+        $(document).on("keydown", function (e) {
+            if (e.ctrlKey && e.key === "s") {
+                e.preventDefault();
+                HandleSubmit();
+            }
+        });
+    };
+
+    const InitTabIndex = function () {
+        try {
+            $("input:not([type='checkbox']), .input, textarea").each(function (
+                index
+            ) {
+                $(this).attr("tabindex", index + 1);
+            });
+        } catch (error) {
+            console.log("InitTabIndex", error);
+        }
     };
 
     const HandleScroll = function () {
@@ -143,6 +171,51 @@ const AddSectionClassModule = (function () {
             ele.remove();
             vocabBlockQuantity--;
         });
+    };
+
+    const GetData = function () {
+        try {
+            const data = {
+                sectionClassName: $("#section-class-name").val(),
+                sectionClassDesc: $("#section-class-desc").val(),
+                isPublic: $("#is-public").is(":checked"),
+                vocabularies: [],
+            };
+
+            $(".vocab-list .vocab-info").each(function () {
+                data.vocabularies.push({
+                    english_text: $(this).find(".english-text").text(),
+                    vietnamese_text: $(this).find(".vietnamese-text").text(),
+                });
+            });
+
+            console.log(data);
+            return data;
+        } catch (error) {
+            console.log("GetData", error);
+        }
+    };
+
+    const HandleSubmit = function () {
+        try {
+            $.ajax({
+                url: urls.create,
+                type: "POST",
+                dataType: "json",
+                data: GetData(),
+                success: function (response) {
+                    console.log("Response", response);
+                },
+                error: function (error) {
+                    console.log("Error", error);
+                },
+                complete: function () {
+                    CommonModule.SetLoading(false);
+                },
+            });
+        } catch (error) {
+            console.log("Cannot submit", error);
+        }
     };
 
     return {

@@ -3,6 +3,7 @@ from . import model
 from ..utils.helpers import render_template_util
 from ...middlewares import login_required
 from flask import request, jsonify
+from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
 
 
 @section_class_bp.route("/", methods=["GET", "POST"])
@@ -10,7 +11,7 @@ from flask import request, jsonify
 def index():
     """
     * Author: Phan Van Tai, created at: 28/04/2024\n
-    * Description: This function will render the section class list page or serve for searching 
+    * Description: This function will render the section class list page or serve for searching
     section classes by their types
     """
     if request.method == "GET":
@@ -51,9 +52,29 @@ def create_set():
     * Author: Phan Van Tai, created at: 28/04/2024
     * Description: This function show a UI to create a new section class or update an existing one
     """
-    if request.method == "GET":
-        return render_template_util(
-            env,
-            "create.html",
-            title="Tạo học phần mới",
-        )
+    try:
+        if request.method == "GET":
+            return render_template_util(
+                env,
+                "create.html",
+                title="Tạo học phần mới",
+            )
+        else:
+            data = request.get_json()
+            section_class_name = data["sectionClassName"]
+            if section_class_name is None or section_class_name == "":
+                return jsonify(
+                    {"code": 400, "message": "Tên học phần không được để trống"}
+                )
+
+            model.create_section_class(
+                SectionClassCreateUpdate(
+                    section_class_name=section_class_name,
+                    section_class_desc=data["sectionClassDesc"],
+                    vocabularies=data["vocabularies"],
+                    is_public=data["isPublic"],
+                )
+            )
+            return jsonify({"code": 200})
+    except Exception as e:
+        return jsonify({"code": 500, "message": str(e)})

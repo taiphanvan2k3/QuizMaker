@@ -5,25 +5,34 @@
 {% endblock %}
 
 {% block script %}
+    <script>
+        var urls = {
+            list_of_section_class_page: "{{url_for('section_class.index')}}",
+            create: "{{url_for('section_class.create_set')}}",
+        }
+    </script>
     <script src="{{url_for('static', filename='js/section_class/create.js')}}"></script>
 {% endblock %}
 
 {% block content %}
     <div class="header">
         <div class="content d-flex justify-content-between align-items-center">
-            <h1 class="title">Tạo học phần mới</h1>
+            <h1 class="title">
+                Tạo học phần mới
+                <img src="{{url_for('static', filename='images/loading.gif')}}" alt="" id="loading-icon">
+            </h1>
             <button class="btn btn-primary rounded-2 btn-create">Tạo</button>
         </div>
     </div>
     <div class="wrapper">
         <div class="header-content">
             <div class="row">
-                <input type="text" class="form-control" placeholder="Nhập tiêu đề, ví dụ Tự học Toeic">
+                <input type="text" class="form-control" placeholder="Nhập tiêu đề, ví dụ Tự học Toeic" id="section-class-name">
             </div>
             <div class="row">
                 <div class="col-md-6">
                     <div class="left-column">
-                        <textarea class="form-control" placeholder="Thêm mô tả..."></textarea>
+                        <textarea class="form-control" placeholder="Thêm mô tả..." id="section-class-desc"></textarea>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -35,8 +44,8 @@
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" checked>
-                                <label class="form-check-label" for="flexSwitchCheckChecked">Công khai học phần này?</label>
+                                <input class="form-check-input" type="checkbox" role="switch" id="is-public" checked>
+                                <label class="form-check-label" for="is-public">Công khai học phần này?</label>
                             </div>
                         </div>
                     </div>

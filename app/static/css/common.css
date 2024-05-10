@@ -9994,3 +9994,9 @@ button {
 	right: 0px;
 	bottom: 0px;
 }
+
+#loading-icon {
+	width: 30px;
+	height: 30px;
+	display: none;
+}
