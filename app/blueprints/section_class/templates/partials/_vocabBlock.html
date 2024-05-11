@@ -1,39 +1,33 @@
-<div class="vocab-block">
+<li class="vocab-block">
+    <div class="btn-block">
+        <button
+            class="btn-drag"
+            data-bs-custom-class="custom-tooltip blue-tooltip"
+            data-bs-toggle="tooltip"
+            data-bs-title="Kéo để di chuyển thẻ"
+        >
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <button
+            class="btn-delete"
+            data-bs-custom-class="custom-tooltip red-tooltip"
+            data-bs-toggle="tooltip"
+            data-bs-title="Xoá thẻ này"
+        >
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </div>
     <div class="header d-flex justify-content-between">
-        {# index này truyền qua từ file create.html #}
-        {% if index is defined %}
-            <span class="stt">{{index + 1}}</span>
-        {% else %}
-            <span class="stt"></span>
-        {% endif %}
-        <div class="btn-block">
-            <button
-                class="btn-drag"
-                data-bs-custom-class="custom-tooltip blue-tooltip"
-                data-bs-toggle="tooltip"
-                data-bs-title="Kéo để di chuyển thẻ"
-            >
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <button
-                class="btn-delete"
-                data-bs-custom-class="custom-tooltip red-tooltip"
-                data-bs-toggle="tooltip"
-                data-bs-title="Xoá thẻ này"
-            >
-                <i class="fa-solid fa-trash"></i>
-            </button>
-        </div>
     </div>
 
     <div class="vocab-info d-flex justify-content-between">
         <div class="column">
             <div class="input english-text" contenteditable="true" data-gramm="false"></div>
-            <label>THUẬT NGỮ</label>
+            <span>THUẬT NGỮ</span>
         </div>
         <div class="column">
             <div class="input vietnamese-text" contenteditable="true" data-gramm="false"></div>
-            <label>ĐỊNH NGHĨA</label>
+            <span>ĐỊNH NGHĨA</span>
         </div>
     </div>
-</div>
+</li>

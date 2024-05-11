@@ -5,31 +5,10 @@ $(document).ready(function () {
 
 const AddSectionClassModule = (function () {
     let vocabBlockQuantity = 5;
-
     const vocabList = document.querySelector(".vocab-list");
-    let observer = null;
-
-    const mutationCallback = (entries) => {
-        entries.forEach((entry) => {
-            // Khi trong vocabList có add thêm element mới thì observer biết được các element được add là những node
-            // nào và thực hiện animation cho chúng
-            entry.addedNodes.forEach((newNode) => {
-                AnimateNewNode(newNode);
-            });
-        });
-    };
 
     const Init = function () {
         CommonModule.SetDefaultAjax();
-
-        // Init observer
-        observer = new MutationObserver(mutationCallback);
-        observer.observe(vocabList, {
-            attributes: false,
-            characterData: false,
-            childList: true,
-            subtree: false,
-        });
 
         // Init tooltip bootstrap
         const tooltipTriggerList = document.querySelectorAll(
@@ -40,11 +19,15 @@ const AddSectionClassModule = (function () {
         );
 
         InitTabIndex();
+        $(".vocab-list").sortable({
+            scroll: false, // Vô hiệu hóa cuộn
+            tolerance: "pointer", // Xác định vị trí con trỏ chuột
+            cancel: ".input",
+            handle: ".btn-drag",
+        });
     };
 
     const InitEvents = function () {
-        window.addEventListener("scroll", HandleScroll);
-
         $(".btn-add").on("click", function () {
             HandleAddVocabBlock();
         });
@@ -78,23 +61,12 @@ const AddSectionClassModule = (function () {
         }
     };
 
-    const HandleScroll = function () {
-        try {
-            if (window.scrollY > 100) {
-                $(".main-content > .header").addClass("fixed");
-            } else {
-                $(".main-content > .header").removeClass("fixed");
-            }
-        } catch (error) {
-            console.log("HandleScroll", error);
-        }
-    };
-
     const HandleAddVocabBlock = function () {
         try {
             const vocabBlockTemplate = $(".vocab-block-template").html();
             const newElement = $(vocabBlockTemplate)[0];
             vocabList.appendChild(newElement);
+            AnimateNewNode(newElement);
         } catch (error) {
             console.log("HandleAddVocabBlock", error);
         }
@@ -130,20 +102,21 @@ const AddSectionClassModule = (function () {
                 duration: 400,
             }
         ).addEventListener("finish", () => {
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                behavior: "smooth", // Optional: scroll behavior
-            });
+            console.log("Scroll to bottom");
 
             const newElement = $(ele);
             vocabBlockQuantity++;
-            newElement.find(".stt").text(vocabBlockQuantity);
             newElement.find(".btn-drag").tooltip();
             newElement.find(".btn-delete").tooltip();
             newElement.find(".btn-delete").on("click", function () {
                 HandleDeleteVocabBlock($(this));
             });
             newElement.find(".english-text").focus();
+
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: "smooth", // Optional: scroll behavior
+            });
         });
     };
 
@@ -205,6 +178,7 @@ const AddSectionClassModule = (function () {
                 data: GetData(),
                 success: function (response) {
                     console.log("Response", response);
+                    window.location.href = urls.list_of_section_class_page;
                 },
                 error: function (error) {
                     console.log("Error", error);

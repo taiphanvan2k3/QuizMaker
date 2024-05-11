@@ -3,7 +3,7 @@ from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
 from .entities.SectionClassDto import SectionClassDto
 from flask import g
 from datetime import datetime
-import pytz, time
+import pytz
 
 db = initialize_firestore()
 section_class_ref = db.collection("section_class")
@@ -56,7 +56,7 @@ def create_section_class(section_class: SectionClassCreateUpdate):
         {
             "name": section_class.section_class_name,
             "description": section_class.section_class_desc,
-            "owner": user_ref,
+            "owner": user_ref,  # Lưu một reference đến user tạo ra lớp học phần
             "members": [current_user["email"]],
             "created_at": datetime.now(timezone),
         }
@@ -73,6 +73,3 @@ def create_section_class(section_class: SectionClassCreateUpdate):
                 "order": idx + 1,
             }
         )
-
-    # Delay 3s
-    time.sleep(3)
