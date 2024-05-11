@@ -21,6 +21,7 @@
                 <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                   {{"Tất cả" if sectionType == "all" else "Tự tạo"}}
                 </button>
+                <img src="{{url_for('static', filename='images/loading.gif')}}" alt="" id="loading-icon">
                 <ul class="dropdown-menu">
                     <li>
                         <a class="dropdown-item" data-val="all">Tất cả</a>

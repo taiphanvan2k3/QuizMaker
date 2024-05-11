@@ -22,6 +22,9 @@ const ListOfSectionClassModule = (function () {
                 data: {
                     sectionType: sectionType,
                 },
+                beforeSend: function () {
+                    CommonModule.SetLoading(true);
+                },
                 success: function (res) {
                     if (res.code === 200) {
                         CommonModule.UpdateUrl(window.location.href, {
@@ -40,6 +43,9 @@ const ListOfSectionClassModule = (function () {
                 },
                 error: function (error) {
                     console.log("ChangeSectionTypes: ", error.message);
+                },
+                complete: function () {
+                    CommonModule.SetLoading(false);
                 },
             });
         } catch (error) {

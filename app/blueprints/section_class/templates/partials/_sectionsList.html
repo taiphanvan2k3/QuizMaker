@@ -1,16 +1,25 @@
 <div class="sections-block">
     <div class="section">
-        {% for section in sections %}
-            <div class="section-item" id="{{section.id}}">
-                <div class="section-item__header d-flex">
-                    <b class="section-item__vocab-count">{{section.vocab_count}} thuật ngữ</b>
-                    <span class="d-inline-flex align-items-center ">
-                        <img class="section-item__owner-avatar m-r-3" src="{{section.owner_avatar}}" alt="">
-                        <b class="section-item__created-by">{{section.created_by}}</b>
-                    </span>
+        {% for date, sections_group in sections.items() %}
+            <div class="section-group">
+                <div class="section-group__date">
+                    <b>{{date}}</b>
                 </div>
-                <div class="section-item__name">
-                    <b>{{section.name}}</b>
+                <div class="section-group__items">
+                    {% for section in sections_group %}
+                        <div class="section-item" id="{{section.id}}">
+                            <div class="section-item__header d-flex">
+                                <b class="section-item__vocab-count">{{section.vocab_count}} thuật ngữ</b>
+                                <span class="d-inline-flex align-items-center ">
+                                    <img class="section-item__owner-avatar m-r-3" src="{{section.owner_avatar}}" alt="">
+                                    <b class="section-item__created-by">{{section.created_by}}</b>
+                                </span>
+                            </div>
+                            <div class="section-item__name">
+                                <b>{{section.name}}</b>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         {% endfor %}
