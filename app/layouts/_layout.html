@@ -44,7 +44,26 @@
             </header>
     
             <div class="main-content">{% block content %} {% endblock %}</div>
-    
+
+            <div class="popup">
+                <div class="modal fade" id="ModalToggle" aria-hidden="true" aria-labelledby="ModalToggleLabel" tabindex="-1">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-4" id="ModalToggleLabel">Thông báo</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="min-height: 50px;text-align: center">
+                          Show a second modal and hide this one with the button below.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary fs-5 dismiss-btn" data-bs-dismiss="modal">Close</button>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary dis-none" id="btn-show-popup" data-bs-target="#ModalToggle" data-bs-toggle="modal" >Open first modal</button>
+            </div>
             <footer>
                 <!-- Footer content -->
             </footer>
@@ -52,6 +71,7 @@
 
         <!-- JS files -->
         <script src="/static/libraries/jquery/jquery-3.2.1.min.js"></script>
+        <script src="/static/libraries/jquery/jquery-ui-1.13.min.js"></script>
         <script src="/static/libraries/bootstrap/js/popper.min.js"></script>
         <script src="/static/libraries/bootstrap/js/bootstrap.min.js"></script>
         <script src="/static/js/common.js"></script>

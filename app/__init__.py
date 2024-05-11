@@ -1,15 +1,17 @@
 from flask import Flask, render_template, g
 from datetime import timedelta
-from .extensions import oauth # Import OAuth object từ file extensions.py
+from .extensions import oauth  # Import OAuth object từ file extensions.py
 from .middlewares import fetch_user_info_middleware
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Đăng ký các Blueprint
 from .blueprints.auth import auth_bp
 from .blueprints.section_class import section_class_bp
 from .blueprints.home import home_bp
+
 
 def create_app():
     app = Flask(__name__)
@@ -18,8 +20,8 @@ def create_app():
     app.before_request(fetch_user_info_middleware)
 
     app.secret_key = os.getenv("APP_SECRET_KEY")
-    app.config['SESSION_COOKIE_NAME'] = 'session_id'
-    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
+    app.config["SESSION_COOKIE_NAME"] = "session_id"
+    app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
     oauth.init_app(app)
 
@@ -38,12 +40,12 @@ def create_app():
     )
 
     # Thêm Blueprint vào app
-    app.register_blueprint(home_bp, url_prefix='/')
+    app.register_blueprint(home_bp, url_prefix="/")
     app.register_blueprint(auth_bp)
-    app.register_blueprint(section_class_bp, url_prefix='/section_class')
+    app.register_blueprint(section_class_bp, url_prefix="/section_class")
 
     app.jinja_env.auto_reload = True
     app.config["FLASK_APP"] = "app.py"
-    app.config['TEMPLATES_AUTO_RELOAD'] = True
-    
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
+
     return app

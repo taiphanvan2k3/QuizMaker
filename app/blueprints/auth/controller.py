@@ -41,7 +41,9 @@ def authorize():
 
     # Lưu thông tin user vào session và cookie
     response = make_response(redirect("/"))
-    response.set_cookie("user_id", user_info["id"], max_age=3600, path="/", httponly=True)
+    response.set_cookie(
+        "user_id", user_info["id"], max_age=12 * 3600, path="/", httponly=True
+    )
     return response
 
 

@@ -76,12 +76,22 @@ button {
 .vocab-list {
     position: relative;
     z-index: 1;
+    padding-left: 0;
+    list-style: decimal
 }
 
 .vocab-list .vocab-block {
     background-color: #fff;
     border-radius: 5px;
     margin-bottom: 20px;
+    list-style-position: inside;
+    position: relative;
+}
+
+.vocab-list .vocab-block .btn-block {
+    position: absolute;
+    right: 20px;
+    top: 14px;
 }
 
 .vocab-block .btn-block button i {
@@ -89,8 +99,7 @@ button {
 }
 
 .vocab-block .header {
-    height: 66px;
-    padding: 15px 10px;
+    height: 25px;
     border-bottom: 1px solid #ddd;
 }
 
@@ -118,7 +127,7 @@ button {
     border-bottom: 0;
 }
 
-.vocab-block .column label {
+.vocab-block .column span {
     font-weight: 600;
     margin-top: 10px;
     font-size: 1.2rem;
