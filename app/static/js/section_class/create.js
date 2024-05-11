@@ -178,7 +178,23 @@ const AddSectionClassModule = (function () {
                 data: GetData(),
                 success: function (response) {
                     console.log("Response", response);
-                    window.location.href = urls.list_of_section_class_page;
+                    if (response.code === 200) {
+                        CommonModule.ShowModal(
+                            POP_UP_TYPE.SUCCESS,
+                            "Thành công",
+                            "Đã tạo mới thành công lớp học tập",
+                            function () {
+                                window.location.href =
+                                    urls.list_of_section_class_page;
+                            }
+                        );
+                    } else {
+                        CommonModule.ShowModal(
+                            POP_UP_TYPE.ERROR,
+                            "Có lỗi xảy ra",
+                            response.message
+                        );
+                    }
                 },
                 error: function (error) {
                     console.log("Error", error);

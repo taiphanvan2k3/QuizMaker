@@ -62,7 +62,7 @@ button {
 	background-color: #fff;
 	position: sticky;
 	top: 0;
-	z-index: 10000;
+	z-index: 1000;
 }
 
 .container .top-navigation .content {
@@ -9999,4 +9999,9 @@ button {
 	width: 30px;
 	height: 30px;
 	display: none;
+}
+
+/* Popup */
+.modal-footer {
+	border-top: none;
 }

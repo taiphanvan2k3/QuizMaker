@@ -1,3 +1,8 @@
+const POP_UP_TYPE = {
+    SUCCESS: "success",
+    ERROR: "error",
+};
+
 const CommonModule = {
     UpdateUrl: function (currentUrl, params) {
         console.log(params);
@@ -29,5 +34,20 @@ const CommonModule = {
         } else {
             $("#loading-icon")?.hide();
         }
+    },
+    ShowModal: function (popup_type, title, message, callback) {
+        $("#ModalToggleLabel").text(title);
+        $(".modal-body").text(message);
+        if (popup_type === POP_UP_TYPE.SUCCESS) {
+            $(".dismiss-btn").text("OK");
+            $(".dismiss-btn").on("click", function () {
+                if (callback) {
+                    callback();
+                }
+            });
+        } else {
+            $(".dismiss-btn").text("Đóng");
+        }
+        $("#btn-show-popup").trigger("click");
     },
 };
