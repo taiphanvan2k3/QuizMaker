@@ -10,42 +10,44 @@ section_class_ref = db.collection("section_class")
 timezone = pytz.timezone("Asia/Ho_Chi_Minh")
 
 
-def get_all_section_classes(section_type="all") -> list[SectionClassDto]:
+def get_all_section_classes(section_type="all"):
     current_user = g.user_info
     query = section_class_ref
-    if section_type != "all":  # các lớp học phần tự tạo
-        query = query.where("created_by.email", "==", current_user["email"])
-
-    # Chỉ hiển thị các lớp học phần mà user này có tham gia
-    query = query.where("members", "array_contains", current_user["email"])
+    if section_type != "all":
+        # Các lớp học phần tự tạo
+        query = query.where("owner_email", "==", current_user["email"])
+    else:
+        # Hiển thị tất cả học phần mà user tham gia
+        query = query.where("members", "array_contains", current_user["email"])
+    query = query.order_by("created_at", direction="DESCENDING")
 
     # Dùng stream() thay vì get() để giúp nhận dữ liệu một cách tuần tự thay vì
     # nhận toàn bộ dữ liệu một lúc khi dùng get()
     sections = query.stream()
 
-    section_classes = []
+    section_classes_groupby = {}
     for section in sections:
         section_data = section.to_dict()
         owner = section_data["owner"].get()
         if owner.exists:
             owner = owner.to_dict()
-        section_classes.append(
-            SectionClassDto(
-                section.id,
-                section_data["name"],
-                owner["display_name"],
-                owner["picture"],
-                section_data["created_at"],
-            )
+
+        # Group các section class theo cùng 1 tháng
+        date_str = f"Tháng {section_data['created_at'].month} năm {section_data['created_at'].year}"
+        current_section_class = SectionClassDto(
+            section.id,
+            section_data["name"],
+            owner["display_name"],
+            owner["picture"],
+            section_data["vocab_count"],
         )
 
-        # Truy cập sub-collection vocabularies
-        vocabularies = section.reference.collection("vocabularies").get()
-        section_classes[-1].vocab_count = len(list(vocabularies))
+        if date_str not in section_classes_groupby:
+            section_classes_groupby[date_str] = [current_section_class]
+        else:
+            section_classes_groupby[date_str].append(current_section_class)
 
-    if section_type != "all":
-        section_classes = [section_classes[0]]
-    return section_classes
+    return section_classes_groupby
 
 
 def create_section_class(section_class: SectionClassCreateUpdate):
@@ -57,8 +59,10 @@ def create_section_class(section_class: SectionClassCreateUpdate):
             "name": section_class.section_class_name,
             "description": section_class.section_class_desc,
             "owner": user_ref,  # Lưu một reference đến user tạo ra lớp học phần
+            "owner_email": current_user["email"],
             "members": [current_user["email"]],
             "created_at": datetime.now(timezone),
+            "vocab_count": len(section_class.vocabularies),
         }
     )
 

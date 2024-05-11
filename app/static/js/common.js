@@ -24,6 +24,7 @@ const CommonModule = {
                 ) {
                     options.data = JSON.stringify(options.data);
                 }
+                console.log("loading");
                 module.SetLoading(true);
             },
         });

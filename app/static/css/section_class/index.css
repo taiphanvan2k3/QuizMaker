@@ -24,6 +24,10 @@
 }
 
 /* Section item */
+.section-group__date {
+    margin-bottom: 10px;
+}
+
 .sections-block .section-item {
     background: #fff;
     border-radius: 5px;
