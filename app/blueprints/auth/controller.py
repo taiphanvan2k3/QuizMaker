@@ -7,6 +7,10 @@ from flask import redirect, make_response, g, url_for, session
 # Route cho trang chủ
 @auth_bp.route("/register")
 def register():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Show register page
+    """
     section_classes = model.get_all_section_classes()
     return render_template_util(
         env, "register.html", section_classes=section_classes, title="Đây là trang chủ"
@@ -15,6 +19,10 @@ def register():
 
 @auth_bp.route("/login")
 def login():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Show login page
+    """
     current_user = g.user_info
     if current_user:
         # Nếu user đã đăng nhập thì chuyển hướng về trang trước đó
@@ -24,6 +32,10 @@ def login():
 
 @auth_bp.route("/signin-google")
 def google_login():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Redirect user to Google OAuth2 login page
+    """
     google = oauth.create_client("google")
     redirect_uri = url_for("auth.authorize", _external=True)
     return google.authorize_redirect(redirect_uri)
@@ -31,6 +43,10 @@ def google_login():
 
 @auth_bp.route("/authorize")
 def authorize():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Authorize user with Google OAuth2
+    """
     google = oauth.create_client("google")
     google.authorize_access_token()
     resp = google.get("userinfo")
@@ -49,6 +65,10 @@ def authorize():
 
 @auth_bp.route("/logout")
 def logout():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Log out user by deleting user_id cookie
+    """
     response = make_response(redirect("/"))
     response.delete_cookie("user_id", path="/")
     return response
