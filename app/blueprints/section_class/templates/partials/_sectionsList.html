@@ -16,7 +16,9 @@
                                 </span>
                             </div>
                             <div class="section-item__name">
-                                <b>{{section.name}}</b>
+                                <a href="{{url_for('section_class.section_class_detail', id=section.id)}}" class="m-t-10">
+                                    <b class="fs-18">{{section.name}}</b>
+                                </a>
                             </div>
                         </div>
                     {% endfor %}

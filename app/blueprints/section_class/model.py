@@ -1,6 +1,7 @@
 from ..utils.firestore_utils import initialize_firestore
 from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
 from .entities.SectionClassDto import SectionClassDto
+from .entities.SectionClassDetailDto import SectionClassDetailDto
 from flask import g
 from datetime import datetime
 import pytz
@@ -77,3 +78,25 @@ def create_section_class(section_class: SectionClassCreateUpdate):
                 "order": idx + 1,
             }
         )
+
+
+def get_section_class_by_id(section_class_id: str):
+    section_class_doc = section_class_ref.document(section_class_id).get(["name"])
+    if not section_class_doc.exists:
+        return None
+
+    # Lấy danh sách vocabulary của lớp học phần
+    vocabularies_ref = (
+        section_class_doc.reference.collection("vocabularies")
+        .order_by("order", direction="ASCENDING")
+        .stream()
+    )
+
+    vocabularies = []
+    for vocab in vocabularies_ref:
+        vocab_data = vocab.to_dict()
+        vocabularies.append(vocab_data)
+
+    return SectionClassDetailDto(
+        section_class_id, section_class_doc.get("name"), vocabularies
+    )

@@ -1,0 +1,11 @@
+{% extends '_layout.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors/style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <img class="img" src="{{ url_for('static', filename='images/not_found.png') }}" alt="not_found">
+    <h1>Trang này hiện tại không khả dụng</h1>
+    <p>Hic! Chúng tôi cũng không biết chuyện gì xảy ra nữa cả!</p>
+{% endblock %}
