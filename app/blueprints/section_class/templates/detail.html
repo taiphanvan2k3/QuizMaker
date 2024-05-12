@@ -1,0 +1,59 @@
+{% extends '_layout.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/section_class/detail.css')}}">
+{% endblock %}
+
+{% block script %}
+    <script>
+        var vocabularies = JSON.parse('{{ section_class.vocabularies|tojson }}');
+    </script>
+    <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
+{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <div class="content d-flex justify-content-between align-items-center">
+            <h2>{{ section_class.name }}</h2>
+        </div>
+    </div>
+    <div class="wrapper">
+        <div class="flash-card-block">
+            <div id="card">
+                <div class="side front">
+                    <p>{{ section_class.vocabularies[0].english }}</p>
+                    <i class="fa-solid fa-volume-high"></i>
+                </div>
+                <div class="side back">
+                    <p>{{ section_class.vocabularies[0].vietnamese }}</p>
+                </div>
+                <div class="learned-message">
+                    <p>Đã biết</p>
+                </div>
+                <div class="learning-message">
+                    <p>Đang học</p>
+                </div>
+            </div>
+            <div class="control-buttons d-flex align-items-center">
+                <div class="left-side">
+                    <button>
+                        <i class="fa-solid fa-reply"></i>
+                    </button>
+                    <button>
+                        <i class="fa-solid fa-shuffle"></i>
+                    </button>
+                </div>
+                <div class="center-side d-flex align-items-center">
+                    <button class="btn-x">
+                        <i class="fa-solid fa-times"></i>
+                    </button>
+                    <span class="counter">1 / {{ section_class.vocabularies|length }}</span>
+                    <button class="btn-checked">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% include 'partials/_achievement.html' %}
+    </div>
+{% endblock  %}

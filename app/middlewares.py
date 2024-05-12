@@ -22,8 +22,13 @@ def fetch_user_info_middleware():
     if request.endpoint != login_endpoint:
         session["redirected_from"] = request.url
 
-    user_id = request.cookies.get("user_id")
+    user_id = request.cookies.get(
+        "user_id", session["user_id"] if "user_id" in session else None
+    )
     if user_id:
+        # Cập nhật lại cookie để giữ user_id luôn tồn tại
+        session["user_id"] = user_id
+
         user_ref = db.collection("users").document(user_id)
         user = user_ref.get()
         if user:

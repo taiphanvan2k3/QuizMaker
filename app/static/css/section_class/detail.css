@@ -1,0 +1,222 @@
+body {
+    overflow-x: hidden;
+}
+
+.main-content {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 24px 40px 40px;
+}
+
+.wrapper {
+    margin-top: 20px;
+}
+
+.flash-card-block .control-buttons {
+    display: flex;
+    margin-top: 20px;
+}
+
+.flash-card-block .control-buttons i.fa-solid {
+    font-size: 1.7rem;
+}
+
+.flash-card-block .control-buttons .center-side i.fa-solid {
+    font-size: 2.4rem;
+}
+
+.flash-card-block .control-buttons .left-side {
+    width: 44%;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.flash-card-block .btn-x,
+.flash-card-block .btn-checked {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #d9dde8;
+}
+
+.flash-card-block .btn-x i {
+    color: red
+}
+
+.flash-card-block .btn-checked i {
+    color: #18AE79;
+}
+
+.control-buttons .counter {
+    display: inline-block;
+    width: 50px;
+    text-align: center;
+}
+
+#card {
+    position: relative;
+    width: 100%;
+    height: 445px;
+    border-radius: 10px;
+    background-color: transparent;
+}
+
+
+
+/* Làm hiệu ứng cho flashcard */
+.side,
+.learned-message,
+.learning-message {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Ẩn mặt sau của card khi flip */
+    backface-visibility: hidden;
+    border-radius: 10px;
+}
+
+.side {
+    box-shadow: 0 .25rem 1rem 0 #282e3e14;
+}
+
+.side p {
+    font-size: 3.2rem;
+}
+
+.front {
+    display: flex;
+    background-color: #fff;
+    transform: rotateX(0deg);
+    transform-style: preserve-3d;
+    opacity: 1;
+    transition: all 0.5s;
+}
+
+.front .fa-volume-high {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    cursor: pointer;
+}
+
+#card.turned>.front {
+    opacity: 0;
+    transform: rotateX(180deg);
+}
+
+.back {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    background-color: #fff;
+    transform: rotateX(180deg);
+    transform-style: preserve-3d;
+    opacity: 0;
+    transition: all 0.5s;
+}
+
+#card.turned>.back {
+    opacity: 1;
+    transform: rotateX(0deg);
+}
+
+.learned-message,
+.learning-message {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #fff;
+    opacity: 0;
+    visibility: hidden;
+    border: 2px solid #18AE79;
+    scale: 0.8;
+    transition: transform 1.5s ease-in-out, scale 0.15s ease-out, rotate 0.3s ease-in-out;
+}
+
+.learning-message {
+    border-color: rgb(237, 136, 86);
+}
+
+.learned-message p,
+.learning-message p {
+    font-size: 3.4rem;
+    font-weight: 800;
+    color: #90f3d0;
+}
+
+.learning-message p {
+    color: rgb(237, 136, 86);
+}
+
+.learned-message.active,
+.learning-message.active {
+    opacity: 1;
+    visibility: visible;
+    scale: 1;
+    rotate: -2.5deg;
+    transform: translateX(100%);
+}
+
+.learning-message.active {
+    rotate: 2.5deg;
+    transform: translateX(-100%);
+}
+
+/* Achievement */
+.achievement-content .statistics {
+    flex: 1
+}
+
+.achievement-content .detail-content {
+    gap: 20px;
+}
+
+.achievement-content .statistics .block {
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-top: 10px;
+}
+
+.achievement-content .left-side {
+    width: 40%;
+}
+
+.achievement-content .statistics .learned-vocab {
+    background-color: #d7f4ed;
+}
+
+.achievement-content .statistics .learning-vocab {
+    background-color: #ff983a33;
+}
+
+.achievement-content .statistics .title,
+.achievement-content .statistics .qty {
+    font-weight: 600;
+    font-size: 1.6rem;
+}
+
+.achievement-content .statistics .learned-vocab .title,
+.achievement-content .statistics .learned-vocab .qty {
+    color: #18ae79;
+}
+
+.achievement-content .statistics .learning-vocab .title,
+.achievement-content .statistics .learning-vocab .qty {
+    color: #d05700;
+}
+
+.achievement-content .right-side .block {
+    padding: 16px;
+    background: #fff;
+    box-shadow: 0 .25rem 1rem #2e385614;
+    border-radius: 8px;
+    margin-top: 10px;
+    gap: 10px;
+}

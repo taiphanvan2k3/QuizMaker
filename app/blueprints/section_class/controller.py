@@ -2,7 +2,7 @@ from . import section_class_bp, env
 from . import model
 from ..utils.helpers import render_template_util
 from ...middlewares import login_required
-from flask import request, jsonify
+from flask import request, jsonify, redirect, url_for
 from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
 
 
@@ -78,3 +78,17 @@ def create_set():
             return jsonify({"code": 200})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
+
+
+@section_class_bp.route("<id>", methods=["GET"])
+@login_required
+def section_class_detail(id):
+    section_class = model.get_section_class_by_id(id)
+    if section_class is None:
+        return redirect(url_for("errors.not_found"))
+    return render_template_util(
+        env,
+        "detail.html",
+        title=f"Học phần: {section_class.name}",
+        section_class=section_class,
+    )

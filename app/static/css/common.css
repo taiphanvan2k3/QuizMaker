@@ -17,6 +17,7 @@ body {
 
 .container {
 	max-width: 100%;
+	min-height: 100vh;
 	background-color: #f6f7fb;
 	padding: 0;
 }
@@ -28,6 +29,7 @@ a {
 
 button {
 	border: none;
+	background-color: transparent;
 }
 
 .dropdown-item:hover,

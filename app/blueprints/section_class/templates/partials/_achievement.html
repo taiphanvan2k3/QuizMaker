@@ -1,0 +1,75 @@
+<div id="achievement" class="dis-none">
+    <header class="d-flex align-items-center justify-content-between">
+        <h2 class="fs-33">Chà, bạn nắm bài thật chắc! Bạn đã sắp xếp tất cả các thẻ.</h2>
+        <img
+            src="{{url_for('static', filename='images/congratulation.svg')}}"
+            alt=""
+        />
+    </header>
+    <div class="achievement-content d-flex justify-content-between">
+        <div class="left-side">
+            <h3>Tiến độ của bạn</h3>
+            <div class="detail-content d-flex align-items-center m-t-20">
+                <div class="img">
+                    <svg
+                        width="112"
+                        height="112"
+                        viewBox="0 0 112 112"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <circle
+                            cx="56"
+                            cy="56"
+                            r="50"
+                            stroke="#FF983A"
+                            stroke-width="12"
+                        ></circle>
+                        <circle
+                            cx="56"
+                            cy="56"
+                            r="50"
+                            stroke="#59E8B5"
+                            stroke-width="12"
+                        ></circle>
+                        <path
+                            fill-rule="evenodd"
+                            clip-rule="evenodd"
+                            d="M72.553 46.505c0-1.014-.394-1.99-1.1-2.718l-.021-.02a3.826 3.826 0 0 0-5.366 0L50.98 59.321l-4.307-4.424-.02-.02a3.825 3.825 0 0 0-5.366 0l-.02.021a3.901 3.901 0 0 0 .001 5.436l7.01 7.202a3.78 3.78 0 0 0 2.709 1.148 3.764 3.764 0 0 0 2.709-1.149l17.756-18.314a3.901 3.901 0 0 0 1.1-2.718z"
+                            fill="#59E8B5"
+                        ></path>
+                    </svg>
+                </div>
+                <div class="statistics">
+                    <div class="block learned-vocab d-flex justify-content-between">
+                        <span class="title">Đã biết</span>
+                        <span class="qty">0</span>
+                    </div>
+                    <div class="block learning-vocab d-flex justify-content-between">
+                        <span class="title">Đang học</span>
+                        <span class="qty">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-side">
+            <h3>Bước tiếp theo</h3>
+            <div class="detail-content m-t-20">
+                <div class="d-flex block">
+                    <img src="{{url_for('static', filename='images/review.svg')}}" alt="review">
+                    <div class="desc">
+                        <h3>Còn một số từ bạn chưa nhớ ư?</h3>
+                        <p>Học lại những từ bạn chưa nhớ trước đó. Hãy cố lên!!!</p>
+                    </div>
+                </div>
+                <div class="d-flex block">
+                    <img src="{{url_for('static', filename='images/learn-again.svg')}}" alt="learn-again">
+                    <div class="desc">
+                        <h3>Đặt lại Thẻ ghi nhớ</h3>
+                        <p>Học lại tất cả thuật ngữ từ đầu.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
