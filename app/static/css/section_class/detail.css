@@ -14,6 +14,7 @@ body {
 }
 
 .flash-card-block .control-buttons {
+    position: relative;
     display: flex;
     margin-top: 20px;
 }
@@ -30,6 +31,11 @@ body {
     width: 44%;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.flash-card-block .control-buttons .form-check {
+    position: absolute;
+    right: 0;
 }
 
 .flash-card-block .btn-x,
@@ -65,8 +71,6 @@ body {
     background-color: transparent;
 }
 
-
-
 /* Làm hiệu ứng cho flashcard */
 .side,
 .learned-message,
@@ -98,11 +102,15 @@ body {
     transition: all 0.5s;
 }
 
-.front .fa-volume-high {
+.front .btn-speech {
     position: absolute;
     right: 20px;
     top: 20px;
     cursor: pointer;
+}
+
+.btn-speech.active i {
+    color: #b47d18;
 }
 
 #card.turned>.front {
@@ -188,6 +196,10 @@ body {
     width: 40%;
 }
 
+.achievement-content .right-side {
+    min-width: 40%;
+}
+
 .achievement-content .statistics .learned-vocab {
     background-color: #d7f4ed;
 }
@@ -219,4 +231,5 @@ body {
     border-radius: 8px;
     margin-top: 10px;
     gap: 10px;
+    cursor: pointer;
 }

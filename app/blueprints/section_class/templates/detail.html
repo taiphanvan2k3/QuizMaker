@@ -6,7 +6,7 @@
 
 {% block script %}
     <script>
-        var vocabularies = JSON.parse('{{ section_class.vocabularies|tojson }}');
+        var vocabData = JSON.parse('{{ section_class.vocabularies|tojson }}');
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
 {% endblock %}
@@ -22,10 +22,13 @@
             <div id="card">
                 <div class="side front">
                     <p>{{ section_class.vocabularies[0].english }}</p>
-                    <i class="fa-solid fa-volume-high"></i>
+                    <button class="btn-speech" data-text="{{ section_class.vocabularies[0].english }}">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
                 </div>
                 <div class="side back">
-                    <p>{{ section_class.vocabularies[0].vietnamese }}</p>
+                    <p>
+                        {{ section_class.vocabularies[0].vietnamese }}</p>
                 </div>
                 <div class="learned-message">
                     <p>Đã biết</p>
@@ -36,10 +39,10 @@
             </div>
             <div class="control-buttons d-flex align-items-center">
                 <div class="left-side">
-                    <button>
+                    <button class="btn-revert">
                         <i class="fa-solid fa-reply"></i>
                     </button>
-                    <button>
+                    <button class="btn-shuffle">
                         <i class="fa-solid fa-shuffle"></i>
                     </button>
                 </div>
@@ -51,6 +54,10 @@
                     <button class="btn-checked">
                         <i class="fa-solid fa-check"></i>
                     </button>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="is-auto-audio" />
+                    <label class="form-check-label" for="is-auto-audio">Tự động phát audio?</label>
                 </div>
             </div>
         </div>
