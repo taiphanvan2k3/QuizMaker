@@ -40,6 +40,56 @@ const AddSectionClassModule = (function () {
             HandleSubmit();
         });
 
+        $('.autocomplete-input-en').on('input', function() {
+            const query = $(this).text();
+            const $suggestionsList = $(this).closest('.vocab-info').find('.suggestions-list-en');
+            if (query.length === 0) {
+                $suggestionsList.empty();
+                return;
+            }
+            GetSuggestionsEn(query, $suggestionsList);
+        }).on('focusout', function() {
+            const $input = $(this);
+            setTimeout(function() {
+                if (!$input.is(":focus")) {
+                    $input.closest('.vocab-info').find('.suggestions-list-en').empty();
+                }
+            }, 300);
+        });
+
+        $('.autocomplete-input-vi').on('input', function() {
+            const query = $(this).closest('.vocab-info').find('.autocomplete-input-en').text();
+            const $suggestionsList = $(this).closest('.vocab-info').find('.suggestions-list-vi');
+            if (query.length === 0 || $(this).text().length === 0){
+                $suggestionsList.empty();
+                return;
+            }
+            GetSuggestionsVi(query, $suggestionsList);
+        }).on('focusout', function() {
+            const $input = $(this);
+            setTimeout(function() {
+                if (!$input.is(":focus")) {
+                    $input.closest('.vocab-info').find('.suggestions-list-vi').empty();
+                }
+            }, 300);
+        });
+
+        $('.suggestions-list-en').on('click', '.clickable', function() {
+            const selectedText = $(this).text();
+            const selectedIndex = $(this).data('index');
+            console.log(`Clicked on ${selectedText} with index ${selectedIndex}`);
+            $(this).closest('.vocab-info').find('.autocomplete-input-en').text(selectedText);
+            $(this).closest('.vocab-info').find('.suggestions-list-en').empty();
+        });
+
+        $('.suggestions-list-vi').on('click', '.clickable', function() {
+            const selectedText = $(this).text();
+            const selectedIndex = $(this).data('index');
+            console.log(`Clicked on ${selectedText} with index ${selectedIndex}`);
+            $(this).closest('.vocab-info').find('.autocomplete-input-vi').text(selectedText);
+            $(this).closest('.vocab-info').find('.suggestions-list-vi').empty();
+        });
+
         // Bắt sự kiện ctrl S
         $(document).on("keydown", function (e) {
             if (e.ctrlKey && e.key === "s") {
@@ -207,6 +257,74 @@ const AddSectionClassModule = (function () {
             console.log("Cannot submit", error);
         }
     };
+
+    /**
+     * Get suggestions from server for autocomplete english text
+     * Author: ManhTD, created at 2024/05/11
+     */
+    const GetSuggestionsEn = function (query, $suggestionsList) {
+        try {
+            $.ajax({
+                url: `/section_class/autocomplete_en?query=${encodeURIComponent(query)}`,
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    $suggestionsList.empty();
+                    if (response.code === 200) {
+                        response.data.slice(0, 5).forEach(function (result, index) {
+                            const li = $('<li>')
+                                .addClass('clickable list-group-item list-group-item-action')
+                                .attr('data-index', index)
+                                .text(result);
+                            $suggestionsList.append(li);
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log("Error fetching suggestions: ", error);
+                },
+                complete: function () {
+                    CommonModule.SetLoading(false);
+                }
+            });
+        } catch (error) {
+            console.log("GetSuggestionsEn Error", error);
+        }
+    }
+
+    /**
+     * Get suggestions from server for autocomplete vietnamese text
+     * Author: ManhTD, created at 2024/05/11
+     */
+    const GetSuggestionsVi = function (query, $suggestionsList) {
+        try {
+            $.ajax({
+                url: `/section_class/autocomplete_vi?query=${encodeURIComponent(query)}`,
+                type: "GET",
+                dataType: "json",
+                success: function (response) {
+                    $suggestionsList.empty();
+                    if (response.code === 200) {
+                        response.data.slice(0, 5).forEach(function (result, index) {
+                            const li = $('<li>')
+                                .addClass('clickable list-group-item list-group-item-action')
+                                .attr('data-index', index)
+                                .text(result);
+                            $suggestionsList.append(li);
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log("Error fetching suggestions: ", error);
+                },
+                complete: function () {
+                    CommonModule.SetLoading(false);
+                }
+            });
+        } catch (error) {
+            console.log("GetSuggestionsEn Error", error);
+        }
+    }
 
     return {
         Init: Init,

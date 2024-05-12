@@ -24,8 +24,10 @@ const CommonModule = {
                 ) {
                     options.data = JSON.stringify(options.data);
                 }
-                console.log("loading");
-                module.SetLoading(true);
+                if(options.global && options.type !== "GET"){
+                    console.log("loading");
+                    module.SetLoading(true);
+                }
             },
         });
     },

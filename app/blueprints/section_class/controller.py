@@ -4,7 +4,14 @@ from ..utils.helpers import render_template_util
 from ...middlewares import login_required
 from flask import request, jsonify, redirect, url_for
 from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
+from algoliasearch.search_client import SearchClient
 
+client = SearchClient.create("KI4POLGT5H", "dfb2ba6c58d39ccb0a7b576db6ff2d32")
+algolia_index = client.init_index("vocab_en_vi_3000_freq")
+settings = {
+    'searchableAttributes': ['word', 'translation']
+}
+algolia_index.set_settings(settings)
 
 @section_class_bp.route("/", methods=["GET", "POST"])
 @login_required
@@ -92,3 +99,40 @@ def section_class_detail(id):
         title=f"Học phần: {section_class.name}",
         section_class=section_class,
     )
+
+@section_class_bp.route("/autocomplete_en", methods=['GET'])
+@login_required
+def autocomplete_en():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Auto complete search for English words with prefix matching.
+    """
+    try:
+        query = request.args.get('query', '')
+        results = algolia_index.search(query, {
+            'attributesToRetrieve': ['word', 'translation'],
+            'hitsPerPage': 5,
+            'restrictSearchableAttributes': ['word']
+        })
+        return jsonify({"code": 200, "data": [hit['word'] for hit in results['hits']]})
+    except Exception as e:
+        print("error: ", e)
+        return jsonify({"code": 500, "message": str(e)})
+
+@section_class_bp.route("/autocomplete_vi", methods=['GET'])
+@login_required
+def autocomplete_vi():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Auto complete search for English words with prefix matching.
+    """
+    try:
+        query = request.args.get('query', '')
+        results = algolia_index.search(query, {
+            'attributesToRetrieve': ['word', 'translation'],
+            'hitsPerPage': 5,
+            'restrictSearchableAttributes': ['word']
+        })
+        return jsonify({"code": 200, "data": [hit['translation'] for hit in results['hits']]})
+    except Exception as e:
+        return jsonify({"code": 500, "message": str(e)})

@@ -149,3 +149,15 @@ button {
     border-color: #ffcd1f;
     color: #ffcd1f;
 }
+
+.list-group-item {
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    background-color: #f6f7fb;
+    transition: background-color 0.3s ease;
+}
+
+.list-group-item:hover {
+    background-color: #ffcd1f;
+    cursor: pointer;
+}
