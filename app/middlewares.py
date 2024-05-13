@@ -1,6 +1,7 @@
 from flask import request, g, session, redirect, url_for
 from .blueprints.utils.firestore_utils import initialize_firestore
 from functools import wraps
+import datetime, pytz
 
 db = initialize_firestore()
 login_endpoint = "auth.login"
@@ -54,3 +55,20 @@ def login_required(view):
         return view(*args, **kwargs)
 
     return wrapped_view
+
+
+def cookie_renewal(response):
+    """
+    Middleware to renew user_id cookie
+    """
+    # Check if the request is not for static files
+    if not request.endpoint or request.endpoint.startswith("static"):
+        return response
+
+    # Cập nhật lại cookie user_id
+    if "user_id" in session:
+        expire_time = datetime.datetime.now(
+            pytz.timezone("Asia/Ho_Chi_Minh")
+        ) + datetime.timedelta(hours=12)
+        response.set_cookie("user_id", session["user_id"], expires=expire_time)
+    return response

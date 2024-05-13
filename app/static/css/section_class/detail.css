@@ -73,8 +73,7 @@ body {
 
 /* Làm hiệu ứng cho flashcard */
 .side,
-.learned-message,
-.learning-message {
+.overlay-message {
     width: 100%;
     height: 100%;
     display: flex;
@@ -135,8 +134,7 @@ body {
     transform: rotateX(0deg);
 }
 
-.learned-message,
-.learning-message {
+.overlay-message {
     position: absolute;
     top: 0;
     left: 0;
@@ -148,28 +146,39 @@ body {
     transition: transform 1.5s ease-in-out, scale 0.15s ease-out, rotate 0.3s ease-in-out;
 }
 
-.learning-message {
-    border-color: rgb(237, 136, 86);
-}
-
-.learned-message p,
-.learning-message p {
+.overlay-message p {
     font-size: 3.4rem;
     font-weight: 800;
     color: #90f3d0;
+}
+
+.learning-message {
+    border-color: rgb(237, 136, 86);
 }
 
 .learning-message p {
     color: rgb(237, 136, 86);
 }
 
-.learned-message.active,
-.learning-message.active {
+.revert-message {
+    border-color: #1878bc;
+}
+
+.revert-message p {
+    color: #1878bc;
+}
+
+.overlay-message.active {
     opacity: 1;
     visibility: visible;
     scale: 1;
     rotate: -2.5deg;
     transform: translateX(100%);
+}
+
+.revert-message.active {
+    transform: translateX(-100%);
+    rotate: 0deg;
 }
 
 .learning-message.active {

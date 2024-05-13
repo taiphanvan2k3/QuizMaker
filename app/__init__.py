@@ -1,7 +1,7 @@
 from flask import Flask, render_template, g
 from datetime import timedelta
 from .extensions import oauth  # Import OAuth object từ file extensions.py
-from .middlewares import fetch_user_info_middleware
+from .middlewares import fetch_user_info_middleware, cookie_renewal
 import os
 from dotenv import load_dotenv
 
@@ -19,6 +19,7 @@ def create_app():
 
     # Đăng kí middleware
     app.before_request(fetch_user_info_middleware)
+    app.after_request(cookie_renewal)
 
     app.secret_key = os.getenv("APP_SECRET_KEY")
     app.config["SESSION_COOKIE_NAME"] = "session_id"

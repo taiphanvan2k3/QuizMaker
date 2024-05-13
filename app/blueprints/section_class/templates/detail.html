@@ -9,6 +9,9 @@
         var vocabData = JSON.parse('{{ section_class.vocabularies|tojson }}');
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
+
+    <!-- Hiệu ứng tung giấy hoa -->
+    <script src="{{url_for('static', filename='libraries/confetti/confetti.min.js')}}"></script>
 {% endblock %}
 
 {% block content %}
@@ -30,11 +33,14 @@
                     <p>
                         {{ section_class.vocabularies[0].vietnamese }}</p>
                 </div>
-                <div class="learned-message">
+                <div class="overlay-message learned-message">
                     <p>Đã biết</p>
                 </div>
-                <div class="learning-message">
+                <div class="overlay-message learning-message">
                     <p>Đang học</p>
+                </div>
+                <div class="overlay-message revert-message">
+                    <p>Hoàn tác</p>
                 </div>
             </div>
             <div class="control-buttons d-flex align-items-center">

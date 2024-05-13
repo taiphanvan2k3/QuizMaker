@@ -96,6 +96,7 @@ const SectionClassDetailModule = (function () {
                 $("#achievement").removeClass("dis-none");
                 $(".learned-vocab .qty").text(learnedVocabularies.length);
                 $(".learning-vocab .qty").text(learningVocabularies.length);
+                CommonModule.ConfettiToss();
                 if (learningVocabularies.length == 0) {
                     $(".review-block").removeClass("d-flex").addClass("d-none");
                 }
@@ -112,14 +113,16 @@ const SectionClassDetailModule = (function () {
     const HandleRevertVocab = function () {
         try {
             if (currentVocabIndex == 0) return;
-
-            $(".learning-message").addClass("active");
-            setTimeout(function () {
-                $(".learning-message").removeClass("active");
-            }, 300);
-
             currentVocabIndex--;
             const vocab = currentVocabularies[currentVocabIndex];
+
+            $(".revert-message").addClass("active");
+            $(".revert-message p").text(vocab.english);
+
+            setTimeout(function () {
+                $(".revert-message").removeClass("active");
+            }, 300);
+
             $(".front p").text(vocab.english);
             $(".back p").text(vocab.vietnamese);
             $(".btn-speech").data("text", vocab.english);
