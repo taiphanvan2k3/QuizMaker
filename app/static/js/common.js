@@ -4,6 +4,13 @@ const POP_UP_TYPE = {
 };
 
 const CommonModule = {
+    /**
+     * Thay đổi URL hiện tại của trang mà không gây reload trang
+     *
+     * Author: TaiPV, created at 28/04/2024
+     * @param {string} currentUrl: url hiện tại
+     * @param {string} params: object chứa các tham số cần thêm vào url
+     */
     UpdateUrl: function (currentUrl, params) {
         console.log(params);
         let url = new URL(currentUrl);
@@ -12,6 +19,12 @@ const CommonModule = {
         }
         history.replaceState({}, "", url);
     },
+
+    /**
+     * Hàm thiết lập các options mặc định cho 1 request khi sử dụng Ajax
+     *
+     * Author: TaiPV, created at 11/05/2024
+     */
     SetDefaultAjax: function () {
         const module = this;
         $.ajaxSetup({
@@ -24,13 +37,20 @@ const CommonModule = {
                 ) {
                     options.data = JSON.stringify(options.data);
                 }
-                if(options.global && options.type !== "GET"){
+                if (options.global && options.type !== "GET") {
                     console.log("loading");
                     module.SetLoading(true);
                 }
             },
         });
     },
+
+    /**
+     * Thiết lập hiển thị icon loading
+     * 
+     * Author: TaiPV, created at 11/05/2024
+     * @param {boolean} isLoading: true nếu muốn hiển thị icon loading, false nếu muốn ẩn
+     */
     SetLoading: function (isLoading) {
         if (isLoading) {
             $("#loading-icon")?.show();
@@ -52,5 +72,48 @@ const CommonModule = {
             $(".dismiss-btn").text("Đóng");
         }
         $("#btn-show-popup").trigger("click");
+    },
+
+    /**
+     * Làm hiệu ứng tung giấy hoa
+     * 
+     * Author: TaiPV, created at 13/05/2024  
+     * Library: https://www.kirilv.com/canvas-confetti/
+     */
+    ConfettiToss: function () {
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = {
+            startVelocity: 20,
+            spread: 360,
+            ticks: 60,
+            zIndex: 0,
+        };
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        const interval = setInterval(function () {
+            const timeLeft = animationEnd - Date.now();
+
+            if (timeLeft <= 0) {
+                return clearInterval(interval);
+            }
+
+            const particleCount = 60 * (timeLeft / duration);
+
+            // since particles fall down, start a bit higher than random
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            });
+            confetti({
+                ...defaults,
+                particleCount,
+                origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            });
+        }, 250);
     },
 };
