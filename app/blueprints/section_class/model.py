@@ -73,15 +73,17 @@ def create_section_class(section_class: SectionClassCreateUpdate):
     for idx, vocab in enumerate(section_class.vocabularies):
         sub_collection.add(
             {
-                "english": vocab["english_text"],
-                "vietnamese": vocab["vietnamese_text"],
+                "english": vocab["english_text"].strip(),
+                "vietnamese": vocab["vietnamese_text"].strip(),
                 "order": idx + 1,
             }
         )
 
 
 def get_section_class_by_id(section_class_id: str):
-    section_class_doc = section_class_ref.document(section_class_id).get(["name"])
+    section_class_doc = section_class_ref.document(section_class_id).get(
+        ["name", "created_at"]
+    )
     if not section_class_doc.exists:
         return None
 
@@ -95,8 +97,27 @@ def get_section_class_by_id(section_class_id: str):
     vocabularies = []
     for vocab in vocabularies_ref:
         vocab_data = vocab.to_dict()
-        vocabularies.append(vocab_data)
+        vocabularies.append({"id": vocab.id, **vocab_data})
+
+    current_user = g.user_info
+    created_at = section_class_doc.get("created_at")
+
+    # Tìm độ chênh lệch về thời gian hiện tại với created_at
+    time_diff = datetime.now(timezone) - created_at
+    if time_diff.days <= 31:
+        time_diff = f"{time_diff.days} ngày trước"
+    elif time_diff.days <= 365:
+        time_diff = f"{time_diff.days // 30} tháng trước"
+    else:
+        time_diff.days = f"{time_diff.days // 365} năm trước"
 
     return SectionClassDetailDto(
-        section_class_id, section_class_doc.get("name"), vocabularies
+        section_class_id,
+        section_class_doc.get("name"),
+        owner={
+            "display_name": current_user["display_name"],
+            "picture": current_user["picture"],
+        },
+        created_at={"actual": created_at, "simple": time_diff},
+        vocabularies=vocabularies,
     )
