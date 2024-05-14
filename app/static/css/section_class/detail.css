@@ -251,9 +251,18 @@ body {
 }
 
 .owner .created_at {
-    font-size: 1.2rem;
-    color: #ddd;
-    font-weight: 400;
+    font-size: 1.3rem;
+    color: #8f8b8b;
+    font-weight: 500;
+}
+
+.section-class-info button {
+    padding: 6px 14px;
+    border: 2px solid #d9dde8;
+    border-radius: 10px;
+    font-size: 1.35rem;
+    color: #586380;
+    font-weight: 500;
 }
 
 .horizontal-divider {
@@ -291,14 +300,15 @@ body {
 .view-options span {
     font-weight: 600;
     font-size: 1.6rem;
-    margin-right: 18px;
+    padding-left: 9px;
+    padding-right: 9px;
     cursor: pointer;
     color: #586380;
     padding-bottom: 5px;
 }
 
 .view-options span:last-child {
-    margin-right: 0;
+    padding-right: 9px;
 }
 
 .view-options span.active {

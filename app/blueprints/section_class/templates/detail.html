@@ -8,6 +8,9 @@
 {% block script %}
     <script>
         var vocabData = JSON.parse('{{ section_class.vocabularies|tojson|safe  }}');
+        var urls = {
+            update: "{{url_for('vocabularies.update', id=0)}}",
+        }
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
 
@@ -79,7 +82,7 @@
         </div>
 
         <!-- Thông tin học phần -->
-        <div class="section-class-info m-b-15">
+        <div class="section-class-info m-b-15 d-flex justify-content-between    ">
             <div class="owner d-flex align-items-center gap-3">
                 <img src="{{section_class.owner['picture']}}" alt="owner_avatar">
                 <div>
@@ -89,6 +92,18 @@
                     </span>
                 </div>
             </div>
+            <div class="options">
+                <button>
+                    <i class="fa-solid fa-arrow-up-from-bracket m-r-5"></i>
+                    Chia sẻ
+                </button>
+                <button>
+                    <i class="fa-solid fa-pen"></i>
+                </button>
+                <button>
+                    <i class="fa-solid fa-ellipsis"></i>
+                </button>
+            </div>
         </div>
 
         <!-- Danh sách các từ vựng -->
@@ -97,8 +112,8 @@
                 <h3>Thuật ngữ trong học phần này ({{section_class.vocabularies|length}})</h3>
                 <div class="options d-flex gap-20">
                     <div class="view-options">
-                        <span class="active">Tất cả</span>
-                        <span>Gắn dấu sao</span>
+                        <span class="active" data-view-option="all">Tất cả</span>
+                        <span data-view-option="stared">Gắn dấu sao</span>
                     </div>
                     <div class="dropdown">
                         <button class="btn btn-secondary dropdown-toggle" id="btn-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">

@@ -12,15 +12,23 @@ const SectionClassDetailModule = (function () {
     let learnedVocabularies = [];
     let learningVocabularies = [];
     const btnChecked = $(".btn-checked");
+    const vocabularyItemTemplate = $(".vocabulary-item:first").clone();
 
     // Lưu trạng thái hành động trước đó
     let previousAction;
     let previousEditedVocabulary;
 
+    // Các option cho việc hiển thị từ vựng
+    const viewOptions = {
+        orderBy: "original",
+        isStared: false,
+    };
+
     const PreprocessingData = function () {
         try {
             originalVocabularies.forEach((vocab, index) => {
                 vocab.index = index;
+                vocab.url = urls.update.replace("0", vocab.id);
             });
             currentVocabularies = [...originalVocabularies];
         } catch (error) {
@@ -50,20 +58,23 @@ const SectionClassDetailModule = (function () {
         $(".review-block").on("click", SetDataForReviewing);
         $(".learn-again-block").on("click", ResetData);
 
-        // Phát âm thanh khi bấm vào load trên vocabulary-item
-        $(".vocabulary-item .btn-speech").on("click", function (e) {
-            GetAudioFromText($(this), $(this).data("text"));
+        $(".vocabularies-block .dropdown-item").on("click", function () {
+            viewOptions.orderBy = $(this).data("order");
+            OrderByVocabularies();
         });
 
-        $(".vocabularies-block .dropdown-item").on("click", function () {
-            console.log($(this).data("order"));
-            OrderByVocabularies($(this).data("order"));
+        $(".view-options span").on("click", function () {
+            $(".view-options span").removeClass("active");
+            $(this).addClass("active");
+            viewOptions.isStared = $(this).data("view-option") === "stared";
+            OrderByVocabularies();
         });
 
         // Xử lý edit trên từng vocabulary-item
         $(".vocabulary-item").on("click", function (e) {
             // Nếu vẫn đang click trên element trước đó thì không disable chế độ edit
             // nhưng nếu click ra ngoài hay vào element khác thì disable chế độ edit
+            console.log("Vocabulary item click");
             if ($(this)[0] === previousEditedVocabulary?.element[0]) {
                 e.stopPropagation();
             }
@@ -71,18 +82,29 @@ const SectionClassDetailModule = (function () {
 
         $(document).on("click", function () {
             if (previousEditedVocabulary) {
+                console.log("document click");
                 HandleDisableEdit();
             }
         });
 
-        $(".vocabulary-item .btn-edit").on("click", function () {
-            // trigger document click event để disable chế độ edit trước đó
-            $(document).trigger("click");
-            HandleEditVocabulary($(this));
+        // Phát âm thanh khi bấm vào load trên vocabulary-item
+        $(".vocabulary-item .btn-speech").on("click", function (e) {
+            GetAudioFromText($(this), $(this).data("text"));
+            e.stopPropagation();
         });
 
-        $(".vocabulary-item .btn-star").on("click", function () {
+        $(".vocabulary-item .btn-edit").on("click", function (e) {
+            // trigger document click event để disable chế độ edit trước đó
+            console.log("btn-edit click");
+            $(document).trigger("click");
+            HandleEditVocabulary($(this));
+            e.stopPropagation();
+        });
+
+        $(".vocabulary-item .btn-star").on("click", function (e) {
+            console.log("btn-star click");
             HandleUpdateStar($(this));
+            e.stopPropagation();
         });
     };
 
@@ -273,22 +295,60 @@ const SectionClassDetailModule = (function () {
         }
     };
 
-    const OrderByVocabularies = function (orderBy) {
+    const OrderByVocabularies = function () {
         try {
             let data = [...originalVocabularies];
-            if (orderBy === "dictionary") {
+            if (viewOptions.isStared) {
+                data = data.filter(
+                    (vocab) => vocab.is_stared === viewOptions.isStared
+                );
+            }
+
+            if (viewOptions.orderBy === "dictionary") {
                 data.sort((a, b) => a.english.localeCompare(b.english));
                 $("#btn-dropdown").text("Bảng chữ cái");
             } else {
                 $("#btn-dropdown").text("Thứ tự gốc");
             }
 
-            $(".vocabulary-item").each(function (index) {
-                $(this).find(".english-text").text(data[index].english);
-                $(this).find(".vietnamese-text").text(data[index].vietnamese);
-                $(this).find(".btn-speech").data("text", data[index].english);
-                $(this).find(".btn-star").data("index", data[index].index);
-                console.log(data[index].index);
+            const wrapper = $(".vocabularies-block .wrapper");
+
+            wrapper.empty();
+
+            data.forEach((vocab) => {
+                const vocabElement = vocabularyItemTemplate.clone();
+                vocabElement
+                    .find(".english-text")
+                    .text(vocab.english)
+                    .data("old_value", vocab.english);
+
+                vocabElement
+                    .find(".vietnamese-text")
+                    .text(vocab.vietnamese)
+                    .data("old_value", vocab.vietnamese);
+
+                vocabElement.find(".btn-speech").data("text", vocab.english);
+                vocabElement.find(".btn-star").data("index", vocab.index);
+                vocabElement.find(".btn-star").data("url", vocab.url);
+                vocabElement.find(".btn-edit").data("url", vocab.url);
+                vocabElement
+                    .find(".btn-star")
+                    .toggleClass("active", vocab.is_stared);
+
+                // Add lại event click cho từng vocabulary-item
+                vocabElement.find(".btn-speech").on("click", function (e) {
+                    GetAudioFromText($(this), $(this).data("text"));
+                    e.stopPropagation();
+                });
+                vocabElement.find(".btn-edit").on("click", function (e) {
+                    HandleEditVocabulary($(this));
+                    e.stopPropagation();
+                });
+                vocabElement.find(".btn-star").on("click", function (e) {
+                    HandleUpdateStar($(this));
+                    e.stopPropagation();
+                });
+                wrapper.append(vocabElement);
             });
         } catch (error) {
             console.log("OrderByVocabularies: ", error);
@@ -322,6 +382,9 @@ const SectionClassDetailModule = (function () {
                 .find(".english-text,.vietnamese-text")
                 .on("focusout", function () {
                     $(this).removeClass("focus");
+                })
+                .on("click", function (e) {
+                    e.stopPropagation();
                 });
 
             vocabElement.find(".english-text").focus();
@@ -405,13 +468,9 @@ const SectionClassDetailModule = (function () {
                 success: function (response) {
                     if (response.code === 200) {
                         CommonModule.ShowToast("success", "Lưu thành công.");
-                        previousEditedVocabulary.element
-                            .find(".english-text")
-                            .data("old_value", data.english.trim());
 
-                        previousEditedVocabulary.element
-                            .find(".vietnamese-text")
-                            .data("old_value", data.vietnamese.trim());
+                        // Cập nhật lại data trên UI
+                        UpdateVocabularyDataOnUI(data.english, data.vietnamese);
 
                         previousEditedVocabulary = null;
                     } else {
@@ -435,7 +494,7 @@ const SectionClassDetailModule = (function () {
             const indexOnOriginalData = $btnStar.data("index");
             $btnStar.toggleClass("active");
 
-            originalVocabularies[indexOnOriginalData].is_started =
+            originalVocabularies[indexOnOriginalData].is_stared =
                 $btnStar.hasClass("active");
             previousEditedVocabulary = {
                 url: $btnStar.data("url"),
@@ -444,6 +503,45 @@ const SectionClassDetailModule = (function () {
 
             UpdateVocabularyItem();
         } catch (error) {}
+    };
+
+    /**
+     * Vì chỉ cập nhật dữ liệu trên UI chứ không gọi API mỗi khi lựa chọn chế độ xem
+     * nên khi gọi update từ vựng xong thì cập nhật lại dữ liệu trên UI luôn
+     *
+     * Author: TaiPV, created at 14/05/2024
+     */
+    const UpdateVocabularyDataOnUI = function (english, vietnamese) {
+        try {
+            previousEditedVocabulary.element
+                .find(".english-text")
+                .text(english)
+                .data("old_value", english);
+
+            previousEditedVocabulary.element
+                .find(".vietnamese-text")
+                .text(vietnamese)
+                .data("old_value", vietnamese);
+
+            previousEditedVocabulary.element
+                .find(".btn-speech")
+                .data("text", english);
+
+            const updatedElementIndex = previousEditedVocabulary.element
+                .find(".btn-star")
+                .data("index");
+            originalVocabularies[updatedElementIndex].english = english;
+            originalVocabularies[updatedElementIndex].vietnamese = vietnamese;
+
+            // Cập nhật lại dữ liệu của flashcard hiện tại
+            if (currentVocabIndex == updatedElementIndex) {
+                $(".front p").text(english);
+                $(".back p").text(vietnamese);
+                $("#card .btn-speech").data("text", english);
+            }
+        } catch (error) {
+            console.log("UpdateVocabularyDataOnUI: ", error);
+        }
     };
 
     return {
