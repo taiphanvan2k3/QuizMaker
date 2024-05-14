@@ -2,25 +2,29 @@
 
 {% block css %}
     <link rel="stylesheet" href="{{url_for('static', filename='css/section_class/detail.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='libraries/toast/fuiToast.min.css')}}">
 {% endblock %}
 
 {% block script %}
     <script>
-        var vocabData = JSON.parse('{{ section_class.vocabularies|tojson }}');
+        var vocabData = JSON.parse('{{ section_class.vocabularies|tojson|safe  }}');
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
 
     <!-- Hiệu ứng tung giấy hoa -->
     <script src="{{url_for('static', filename='libraries/confetti/confetti.min.js')}}"></script>
+    <script src="{{url_for('static', filename='libraries/toast/fuiToast.min.js')}}"></script>
 {% endblock %}
 
 {% block content %}
     <div class="header">
         <div class="content d-flex justify-content-between align-items-center">
             <h2>{{ section_class.name }}</h2>
+            <input type="hidden" id="section-class-id" value="{{ section_class.id }}">
         </div>
     </div>
     <div class="wrapper">
+        <!-- Flash card -->
         <div class="flash-card-block">
             <div id="card">
                 <div class="side front">
@@ -67,6 +71,75 @@
                 </div>
             </div>
         </div>
+
+        <!-- Thành tựu -->
         {% include 'partials/_achievement.html' %}
+        <div class="horizontal-divider">
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Thông tin học phần -->
+        <div class="section-class-info m-b-15">
+            <div class="owner d-flex align-items-center gap-3">
+                <img src="{{section_class.owner['picture']}}" alt="owner_avatar">
+                <div>
+                    <h3 class="owner-name m-b-0">{{ section_class.owner["display_name"] }}</h3>
+                    <span class="created_at" title="{{section_class.created_at['actual']}}">
+                        Đã tạo {{ section_class.created_at["simple"]}}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách các từ vựng -->
+        <div class="vocabularies-block">
+            <div class="d-flex justify-content-between align-items-center">
+                <h3>Thuật ngữ trong học phần này ({{section_class.vocabularies|length}})</h3>
+                <div class="options d-flex gap-20">
+                    <div class="view-options">
+                        <span class="active">Tất cả</span>
+                        <span>Gắn dấu sao</span>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" id="btn-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Thứ tự gốc
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown-item" data-order="original">Thứ tự gốc</li>
+                            <li class="dropdown-item" data-order="dictionary">Bảng chữ cái</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="wrapper">
+                {% for vocabulary in section_class.vocabularies %}
+                    <div class="vocabulary-item d-flex align-items-center">
+                        <div class="left-side">
+                            <span class="english-text" data-old_value="{{ vocabulary['english'] }}">
+                                {{ vocabulary["english"] }}
+                            </span>
+                        </div>
+                        <div class="right-side d-flex justify-content-between">
+                            <span class="vietnamese-text" data-old_value="{{ vocabulary['vietnamese'] }}">
+                                {{ vocabulary["vietnamese"] }}
+                            </span>
+                            <div class="options">
+                                <button class="btn-star {{ 'active' if vocabulary['is_stared'] else '' }}"
+                                    data-url="{{url_for('vocabularies.update', id=vocabulary['id'])}}"
+                                    data-index="{{loop.index - 1}}">
+                                    <i class="fa-solid fa-star"></i>
+                                </button>
+                                <button class="btn-speech" data-text="{{ vocabulary['english'] }}">
+                                    <i class="fa-solid fa-volume-high"></i>
+                                </button>
+                                <button class="btn-edit" data-url="{{url_for('vocabularies.update', id=vocabulary['id'])}}">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 {% endblock  %}

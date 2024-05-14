@@ -47,7 +47,7 @@ const CommonModule = {
 
     /**
      * Thiết lập hiển thị icon loading
-     * 
+     *
      * Author: TaiPV, created at 11/05/2024
      * @param {boolean} isLoading: true nếu muốn hiển thị icon loading, false nếu muốn ẩn
      */
@@ -58,6 +58,15 @@ const CommonModule = {
             $("#loading-icon")?.hide();
         }
     },
+
+    /**
+     * Author: TaiPV, created at 11/05/2024
+     *
+     * @param {string} popup_type: see POP_UP_TYPE
+     * @param {string} title
+     * @param {string} message
+     * @param {function} callback
+     */
     ShowModal: function (popup_type, title, message, callback) {
         $("#ModalToggleLabel").text(title);
         $(".modal-body").text(message);
@@ -75,9 +84,31 @@ const CommonModule = {
     },
 
     /**
+     * Author: TaiPV, created at 14/05/2024
+     *
+     * @param {string} type: success, error, info, warning
+     * @param {string} message: nội dung thông báo
+     * @param {object} style: truyền CSS inline để custom style cho toast
+     */
+    ShowToast: function (type, message, style) {
+        let toast;
+        if (type == "success") {
+            toast = FuiToast.success;
+        } else if (type == "error") {
+            toast = FuiToast.error;
+        } else if (type == "info") {
+            toast = FuiToast.info;
+        } else {
+            toast = FuiToast.warning;
+        }
+        toast(message, style);
+        $(".fui-toast").css(style ?? {});
+    },
+
+    /**
      * Làm hiệu ứng tung giấy hoa
-     * 
-     * Author: TaiPV, created at 13/05/2024  
+     *
+     * Author: TaiPV, created at 13/05/2024
      * Library: https://www.kirilv.com/canvas-confetti/
      */
     ConfettiToss: function () {

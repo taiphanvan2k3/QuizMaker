@@ -3,9 +3,11 @@ $(document).ready(function () {
 });
 
 const SectionClassDetailModule = (function () {
+    const sectionClassId = $("#section-class-id").val();
+
     let currentVocabIndex = 0;
     let originalVocabularies = vocabData;
-    let currentVocabularies = [...originalVocabularies];
+    let currentVocabularies;
     let vocabCount = vocabData.length;
     let learnedVocabularies = [];
     let learningVocabularies = [];
@@ -13,8 +15,21 @@ const SectionClassDetailModule = (function () {
 
     // Lưu trạng thái hành động trước đó
     let previousAction;
+    let previousEditedVocabulary;
+
+    const PreprocessingData = function () {
+        try {
+            originalVocabularies.forEach((vocab, index) => {
+                vocab.index = index;
+            });
+            currentVocabularies = [...originalVocabularies];
+        } catch (error) {
+            console.log("PreprocessingData: ", error);
+        }
+    };
 
     const InitEvents = function () {
+        PreprocessingData();
         $("#card").on("click", function () {
             $(this).toggleClass("turned");
         });
@@ -23,8 +38,9 @@ const SectionClassDetailModule = (function () {
             HandleNextVocab($(this));
         });
 
-        $(".btn-speech").on("click", function (e) {
-            GetAudioFromText($(this).data("text"));
+        // Phát âm thanh khi bấm vào loa trên card
+        $("#card .btn-speech").on("click", function (e) {
+            GetAudioFromText($(this), $(this).data("text"));
             e.stopPropagation();
         });
 
@@ -33,6 +49,41 @@ const SectionClassDetailModule = (function () {
 
         $(".review-block").on("click", SetDataForReviewing);
         $(".learn-again-block").on("click", ResetData);
+
+        // Phát âm thanh khi bấm vào load trên vocabulary-item
+        $(".vocabulary-item .btn-speech").on("click", function (e) {
+            GetAudioFromText($(this), $(this).data("text"));
+        });
+
+        $(".vocabularies-block .dropdown-item").on("click", function () {
+            console.log($(this).data("order"));
+            OrderByVocabularies($(this).data("order"));
+        });
+
+        // Xử lý edit trên từng vocabulary-item
+        $(".vocabulary-item").on("click", function (e) {
+            // Nếu vẫn đang click trên element trước đó thì không disable chế độ edit
+            // nhưng nếu click ra ngoài hay vào element khác thì disable chế độ edit
+            if ($(this)[0] === previousEditedVocabulary?.element[0]) {
+                e.stopPropagation();
+            }
+        });
+
+        $(document).on("click", function () {
+            if (previousEditedVocabulary) {
+                HandleDisableEdit();
+            }
+        });
+
+        $(".vocabulary-item .btn-edit").on("click", function () {
+            // trigger document click event để disable chế độ edit trước đó
+            $(document).trigger("click");
+            HandleEditVocabulary($(this));
+        });
+
+        $(".vocabulary-item .btn-star").on("click", function () {
+            HandleUpdateStar($(this));
+        });
     };
 
     const HandleNextVocab = function ($btn) {
@@ -62,6 +113,7 @@ const SectionClassDetailModule = (function () {
                 }
             }
             currentVocabIndex++;
+            UpdateProgressBar();
 
             $(".counter").text(`${currentVocabIndex + 1} / ${vocabCount}`);
             if (currentVocabIndex === vocabCount - 1) {
@@ -114,6 +166,8 @@ const SectionClassDetailModule = (function () {
         try {
             if (currentVocabIndex == 0) return;
             currentVocabIndex--;
+            UpdateProgressBar();
+
             const vocab = currentVocabularies[currentVocabIndex];
 
             $(".revert-message").addClass("active");
@@ -147,15 +201,15 @@ const SectionClassDetailModule = (function () {
      * Sử dụng API SpeechSynthesisUtterance để chuyển đổi text thành audio
      * Author: TaiPV, created at 12/05/2024
      */
-    const GetAudioFromText = function (text) {
+    const GetAudioFromText = function ($btn, text) {
         try {
-            $(".btn-speech").addClass("active");
+            $btn.addClass("active");
             const audio = new SpeechSynthesisUtterance(text);
             audio.lang = "en-US";
             audio.voice = window.speechSynthesis.getVoices()[5];
             window.speechSynthesis.speak(audio);
             audio.onend = function () {
-                $(".btn-speech").removeClass("active");
+                $btn.removeClass("active");
             };
         } catch (error) {
             console.log("GetAudioFromText: ", error);
@@ -184,6 +238,7 @@ const SectionClassDetailModule = (function () {
         $(".flash-card-block").removeClass("dis-none");
         $("#achievement").addClass("dis-none");
         $(".review-block").addClass("d-flex").removeClass("d-none");
+        UpdateProgressBar();
     };
 
     /**
@@ -206,6 +261,189 @@ const SectionClassDetailModule = (function () {
         $(".btn-revert").prop("disabled", true);
         $(".flash-card-block").removeClass("dis-none");
         $("#achievement").addClass("dis-none");
+        UpdateProgressBar();
+    };
+
+    const UpdateProgressBar = function () {
+        try {
+            const percent = (currentVocabIndex / vocabCount) * 100;
+            $(".horizontal-divider .progress-bar").css("width", `${percent}%`);
+        } catch (error) {
+            console.log("UpdateProgressBar: ", error);
+        }
+    };
+
+    const OrderByVocabularies = function (orderBy) {
+        try {
+            let data = [...originalVocabularies];
+            if (orderBy === "dictionary") {
+                data.sort((a, b) => a.english.localeCompare(b.english));
+                $("#btn-dropdown").text("Bảng chữ cái");
+            } else {
+                $("#btn-dropdown").text("Thứ tự gốc");
+            }
+
+            $(".vocabulary-item").each(function (index) {
+                $(this).find(".english-text").text(data[index].english);
+                $(this).find(".vietnamese-text").text(data[index].vietnamese);
+                $(this).find(".btn-speech").data("text", data[index].english);
+                $(this).find(".btn-star").data("index", data[index].index);
+                console.log(data[index].index);
+            });
+        } catch (error) {
+            console.log("OrderByVocabularies: ", error);
+        }
+    };
+
+    /**
+     * Xử lý event khi nhấn vào nút edit trên từng từ vựng
+     *
+     * Author: TaiPV, created at 13/05/2024
+     */
+    const HandleEditVocabulary = function ($btnEdit) {
+        try {
+            const vocabElement = $btnEdit.closest(".vocabulary-item");
+            vocabElement
+                .find(".english-text")
+                .attr("contenteditable", true)
+                .addClass("active");
+            vocabElement
+                .find(".vietnamese-text")
+                .attr("contenteditable", true)
+                .addClass("active");
+
+            vocabElement
+                .find(".english-text,.vietnamese-text")
+                .on("focus", function () {
+                    $(this).addClass("focus");
+                });
+
+            vocabElement
+                .find(".english-text,.vietnamese-text")
+                .on("focusout", function () {
+                    $(this).removeClass("focus");
+                });
+
+            vocabElement.find(".english-text").focus();
+
+            previousEditedVocabulary = {
+                url: $btnEdit.data("url"),
+                element: vocabElement,
+            };
+        } catch (error) {
+            console.log("HandleEditVocabulary: ", error);
+        }
+    };
+
+    const HandleDisableEdit = function () {
+        try {
+            // Khi click ra ngoài thì sẽ disable chế độ edit
+            if (previousEditedVocabulary) {
+                const englishTextElement =
+                    previousEditedVocabulary.element.find(".english-text");
+                const vietnameseTextElement =
+                    previousEditedVocabulary.element.find(".vietnamese-text");
+
+                englishTextElement
+                    .attr("contenteditable", false)
+                    .removeClass("active");
+
+                vietnameseTextElement
+                    .attr("contenteditable", false)
+                    .removeClass("active");
+
+                previousEditedVocabulary.element
+                    .find(".btn-speech")
+                    .data("text", englishTextElement.text());
+
+                // Update lại thông tin từ vựng
+                if (
+                    englishTextElement.text().trim() !==
+                        englishTextElement.data("old_value") ||
+                    vietnameseTextElement.text().trim() !==
+                        vietnameseTextElement.data("old_value")
+                ) {
+                    UpdateVocabularyItem();
+                }
+            }
+        } catch (error) {
+            console.log("HandleDisableEdit: ", error);
+        }
+    };
+
+    /**
+     * Tiến hành update lại thông tin từ vựng vào database
+     *
+     * Author: TaiPV, created at 13/05/2024
+     */
+    const UpdateVocabularyItem = function () {
+        try {
+            // Tiến hành update lại thông tin từ vựng
+            const english = previousEditedVocabulary.element
+                .find(".english-text")
+                .text();
+
+            const vietnamese = previousEditedVocabulary.element
+                .find(".vietnamese-text")
+                .text();
+
+            const isStared = previousEditedVocabulary.element
+                .find(".btn-star")
+                .hasClass("active");
+
+            const data = {
+                sectionClassId,
+                english: english.trim(),
+                vietnamese: vietnamese.trim(),
+                isStared,
+            };
+
+            $.ajax({
+                url: previousEditedVocabulary.url,
+                type: "POST",
+                data: data,
+                success: function (response) {
+                    if (response.code === 200) {
+                        CommonModule.ShowToast("success", "Lưu thành công.");
+                        previousEditedVocabulary.element
+                            .find(".english-text")
+                            .data("old_value", data.english.trim());
+
+                        previousEditedVocabulary.element
+                            .find(".vietnamese-text")
+                            .data("old_value", data.vietnamese.trim());
+
+                        previousEditedVocabulary = null;
+                    } else {
+                        CommonModule.ShowToast("error", response.message);
+                    }
+                },
+                error: function (error) {
+                    CommonModule.ShowToast(
+                        "error",
+                        "Có lỗi xảy ra khi gửi yêu cầu."
+                    );
+                },
+            });
+        } catch (error) {
+            CommonModule.ShowToast("error", "Có lỗi xảy ra phía Client");
+        }
+    };
+
+    const HandleUpdateStar = function ($btnStar) {
+        try {
+            const indexOnOriginalData = $btnStar.data("index");
+            $btnStar.toggleClass("active");
+
+            originalVocabularies[indexOnOriginalData].is_started =
+                $btnStar.hasClass("active");
+            previousEditedVocabulary = {
+                url: $btnStar.data("url"),
+                element: $btnStar.closest(".vocabulary-item"),
+            };
+
+            UpdateVocabularyItem();
+        } catch (error) {}
     };
 
     return {
