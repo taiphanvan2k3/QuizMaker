@@ -31,7 +31,7 @@
 
         <!-- CSS files -->
         <link rel="stylesheet" href="{{url_for('static', filename='libraries/bootstrap/css/bootstrap.css')}}">
-        <link rel="stylesheet" href="{{url_for('static', filename='libraries/fontawesome6.5.2/css/all.min.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='libraries/fontawesomepro6.5.2/css/all.min.css')}}">
         <link rel="stylesheet" href="{{url_for('static', filename='css/common.css')}}">
 
         <!-- CSS tại 1 trang cụ thể -->
@@ -43,6 +43,9 @@
             <header class="top-navigation">
                 {% include '_header.html' %}
             </header>
+
+            <!-- Block for progress bar (optional) -->
+            {% block progress_bar %}{% endblock %}
     
             <div class="main-content">{% block content %} {% endblock %}</div>
 
