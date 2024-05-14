@@ -11,14 +11,12 @@ def update_vocabulary(vocabulary: VocabularyCreateUpdate):
         .collection("vocabularies")
     )
 
-    print(bool(vocabulary.is_started))
-
     # Update vocabulary
     vocabularies_ref.document(vocabulary.id).update(
         {
             "english": vocabulary.english_text,
             "vietnamese": vocabulary.vietnamese_text,
-            "is_stared": True if vocabulary.is_started == "true" else False,
+            "is_stared": True if vocabulary.is_stared == "true" else False,
         }
     )
 
