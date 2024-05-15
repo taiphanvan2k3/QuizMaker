@@ -61,6 +61,7 @@ def create_section_class(section_class: SectionClassCreateUpdate):
         {
             "name": section_class.section_class_name,
             "description": section_class.section_class_desc,
+            "is_public": section_class.is_public,
             "owner": user_ref,  # Lưu một reference đến user tạo ra lớp học phần
             "owner_email": current_user["email"],
             "members": [current_user["email"]],
@@ -82,9 +83,52 @@ def create_section_class(section_class: SectionClassCreateUpdate):
         )
 
 
+def update_section_class(section_class: SectionClassCreateUpdate):
+    edited_section_class_ref = section_class_ref.document(section_class.id)
+    edited_section_class_ref.update(
+        {
+            "name": section_class.section_class_name,
+            "description": section_class.section_class_desc,
+            "is_public": section_class.is_public,
+            "vocab_count": len(section_class.vocabularies),
+        }
+    )
+
+    # Thay đổi danh sách vocabulary của lớp học phần
+    vocabularies_ref = edited_section_class_ref.collection("vocabularies")
+
+    # Chỉ thay đổi các vocabulary đã thay đổi
+    current_vocabularies = vocabularies_ref.stream()
+    current_vocabularies_data = {
+        vocab.id: vocab.to_dict() for vocab in current_vocabularies
+    }
+    new_vocabularies = {vocab["id"]: vocab for vocab in section_class.vocabularies}
+
+    for vocab_id, vocab_data in new_vocabularies.items():
+        vocab_data = {
+            "english": vocab_data["english_text"],
+            "vietnamese": vocab_data["vietnamese_text"],
+            "order": vocab_data["order"],
+        }
+
+        if vocab_id in current_vocabularies_data:
+            vocabularies_ref.document(vocab_id).update(vocab_data)
+        else:
+            vocabularies_ref.add(vocab_data)
+
+    # Xóa các vocabulary không còn tồn tại
+    deleted_vocab_ids = set(current_vocabularies_data.keys()) - set(
+        new_vocabularies.keys()
+    )
+
+    if len(deleted_vocab_ids) > 0:
+        for vocab_id in deleted_vocab_ids:
+            vocabularies_ref.document(vocab_id).delete()
+
+
 def get_section_class_by_id(section_class_id: str):
     section_class_doc = section_class_ref.document(section_class_id).get(
-        ["name", "created_at"]
+        ["name", "description", "created_at", "is_public"]
     )
     if not section_class_doc.exists:
         return None
@@ -116,12 +160,14 @@ def get_section_class_by_id(section_class_id: str):
     return SectionClassDetailDto(
         section_class_id,
         section_class_doc.get("name"),
+        section_class_doc.get("description"),
         owner={
             "display_name": current_user["display_name"],
             "picture": current_user["picture"],
         },
         created_at={"actual": created_at, "simple": time_diff},
         vocabularies=vocabularies,
+        is_public=section_class_doc.get("is_public"),
     )
 
 def create_quiz(vocabularies):

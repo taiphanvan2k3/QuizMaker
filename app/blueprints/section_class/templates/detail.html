@@ -2,7 +2,6 @@
 
 {% block css %}
     <link rel="stylesheet" href="{{url_for('static', filename='css/section_class/detail.css')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='libraries/toast/fuiToast.min.css')}}">
 {% endblock %}
 
 {% block script %}
@@ -16,7 +15,6 @@
 
     <!-- Hiệu ứng tung giấy hoa -->
     <script src="{{url_for('static', filename='libraries/confetti/confetti.min.js')}}"></script>
-    <script src="{{url_for('static', filename='libraries/toast/fuiToast.min.js')}}"></script>
 {% endblock %}
 
 {% block content %}
@@ -27,7 +25,6 @@
             <div class="menu-item">
                 <div class="d-flex">
                     <a href="{{url_for('section_class.section_class_exam', id=section_class.id)}}">
-                        <!-- <b class=""><i class="fa-solid fa-person-chalkboard fa-xl m-r-10" style="color: #4255ff;"></i>Kiểm tra</b> -->
                         <b class=""><i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>Kiểm tra</b>
                     </a>
                 </div>
@@ -90,7 +87,7 @@
         </div>
 
         <!-- Thông tin học phần -->
-        <div class="section-class-info m-b-15 d-flex justify-content-between    ">
+        <div class="section-class-info m-b-15 d-flex justify-content-between">
             <div class="owner d-flex align-items-center gap-3">
                 <img src="{{section_class.owner['picture']}}" alt="owner_avatar">
                 <div>
@@ -105,9 +102,9 @@
                     <i class="fa-solid fa-arrow-up-from-bracket m-r-5"></i>
                     Chia sẻ
                 </button>
-                <button>
+                <a href="{{url_for('section_class.edit', id = section_class.id)}}">
                     <i class="fa-solid fa-pen"></i>
-                </button>
+                </a>
                 <button>
                     <i class="fa-solid fa-ellipsis"></i>
                 </button>
