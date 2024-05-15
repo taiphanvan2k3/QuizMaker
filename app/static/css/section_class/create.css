@@ -50,6 +50,25 @@ button {
 }
 
 /* Header content */
+.header .title a {
+    color: #4255ff;
+    font-size: 1.6rem;
+    font-weight: 600;
+}
+
+.header .title a span {
+    margin-left: 8px;
+}
+
+.header .title a i {
+    color: #4255ff;
+}
+
+.header .title a:hover,
+.header .title a:hover i {
+    color: #423ed8;
+}
+
 .header-content {
     margin-top: 10px;
 }

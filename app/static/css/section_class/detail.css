@@ -2,6 +2,25 @@ body {
     overflow-x: hidden;
 }
 
+.form-control {
+    font-size: 1.4rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    border-color: inset 0 0 0 2px #388BFF;
+    box-shadow: unset;
+}
+
+.header .content h2 {
+    margin-bottom: 0;
+}
+
+.header .content .menu-item span {
+    font-weight: 500;
+}
+
 .main-content {
     width: 80%;
     margin-left: auto;
@@ -418,4 +437,17 @@ body {
 .menu-item:hover {
     border-bottom-color: #a8b1ff;
     cursor: pointer;
+}
+
+/* Sharing modal */
+#sharingModal button {
+    color: white;
+}
+
+#sharingModal .modal-body {
+    display: flex;
+}
+
+#sharingModal .modal-body .form-control {
+    width: 80%;
 }

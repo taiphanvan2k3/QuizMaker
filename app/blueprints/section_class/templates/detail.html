@@ -25,7 +25,8 @@
             <div class="menu-item">
                 <div class="d-flex">
                     <a href="{{url_for('section_class.section_class_exam', id=section_class.id)}}">
-                        <b class=""><i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>Kiểm tra</b>
+                        <i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>
+                        <span>Kiểm tra</span>
                     </a>
                 </div>
             </div>
@@ -43,7 +44,8 @@
                 </div>
                 <div class="side back">
                     <p>
-                        {{ section_class.vocabularies[0].vietnamese }}</p>
+                        {{ section_class.vocabularies[0].vietnamese }}
+                    </p>
                 </div>
                 <div class="overlay-message learned-message">
                     <p>Đã biết</p>
@@ -98,7 +100,8 @@
                 </div>
             </div>
             <div class="options">
-                <button>
+                <button data-bs-toggle="modal"
+                    data-bs-target="#sharingModal">
                     <i class="fa-solid fa-arrow-up-from-bracket m-r-5"></i>
                     Chia sẻ
                 </button>
@@ -108,6 +111,7 @@
                 <button>
                     <i class="fa-solid fa-ellipsis"></i>
                 </button>
+                {% include 'partials/_sharing-modal.html' %}
             </div>
         </div>
 
