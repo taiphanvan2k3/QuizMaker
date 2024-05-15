@@ -1,9 +1,9 @@
 $(document).ready(function () {
-    AddSectionClassModule.Init();
-    AddSectionClassModule.InitEvents();
+    CreateEditSectionClassModule.Init();
+    CreateEditSectionClassModule.InitEvents();
 });
 
-const AddSectionClassModule = (function () {
+const CreateEditSectionClassModule = (function () {
     let vocabBlockQuantity = 5;
     const vocabList = document.querySelector(".vocab-list");
 
@@ -40,54 +40,89 @@ const AddSectionClassModule = (function () {
             HandleSubmit();
         });
 
-        $('.autocomplete-input-en').on('input', function() {
-            const query = $(this).text();
-            const $suggestionsList = $(this).closest('.vocab-info').find('.suggestions-list-en');
-            if (query.length === 0) {
-                $suggestionsList.empty();
-                return;
+        $(window).on("scroll", function () {
+            if (window.scrollY >= 100) {
+                $(".main-content>.header").addClass("fixed");
+            } else {
+                $(".main-content>.header").removeClass("fixed");
             }
-            GetSuggestionsEn(query, $suggestionsList);
-        }).on('focusout', function() {
-            const $input = $(this);
-            setTimeout(function() {
-                if (!$input.is(":focus")) {
-                    $input.closest('.vocab-info').find('.suggestions-list-en').empty();
+        });
+
+        $(".autocomplete-input-en")
+            .on("input", function () {
+                const query = $(this).text();
+                const $suggestionsList = $(this)
+                    .closest(".vocab-info")
+                    .find(".suggestions-list-en");
+                if (query.length === 0) {
+                    $suggestionsList.empty();
+                    return;
                 }
-            }, 300);
-        });
+                GetSuggestionsEn(query, $suggestionsList);
+            })
+            .on("focusout", function () {
+                const $input = $(this);
+                setTimeout(function () {
+                    if (!$input.is(":focus")) {
+                        $input
+                            .closest(".vocab-info")
+                            .find(".suggestions-list-en")
+                            .empty();
+                    }
+                }, 300);
+            });
 
-        $('.autocomplete-input-vi').on('input', function() {
-            const query = $(this).closest('.vocab-info').find('.autocomplete-input-en').text();
-            const $suggestionsList = $(this).closest('.vocab-info').find('.suggestions-list-vi');
-            if (query.length === 0){
-                $suggestionsList.empty();
-                return;
-            }
-            GetSuggestionsVi(query, $suggestionsList);
-        }).on('focusout', function() {
-            const $input = $(this);
-            setTimeout(function() {
-                if (!$input.is(":focus")) {
-                    $input.closest('.vocab-info').find('.suggestions-list-vi').empty();
+        $(".autocomplete-input-vi")
+            .on("input", function () {
+                const query = $(this)
+                    .closest(".vocab-info")
+                    .find(".autocomplete-input-en")
+                    .text();
+                const $suggestionsList = $(this)
+                    .closest(".vocab-info")
+                    .find(".suggestions-list-vi");
+                if (query.length === 0) {
+                    $suggestionsList.empty();
+                    return;
                 }
-            }, 300);
+                GetSuggestionsVi(query, $suggestionsList);
+            })
+            .on("focusout", function () {
+                const $input = $(this);
+                setTimeout(function () {
+                    if (!$input.is(":focus")) {
+                        $input
+                            .closest(".vocab-info")
+                            .find(".suggestions-list-vi")
+                            .empty();
+                    }
+                }, 300);
+            });
+
+        $(".suggestions-list-en").on("click", ".clickable", function () {
+            const selectedText = $(this).text();
+            const selectedIndex = $(this).data("index");
+            console.log(
+                `Clicked on ${selectedText} with index ${selectedIndex}`
+            );
+            $(this)
+                .closest(".vocab-info")
+                .find(".autocomplete-input-en")
+                .text(selectedText);
+            $(this).closest(".vocab-info").find(".suggestions-list-en").empty();
         });
 
-        $('.suggestions-list-en').on('click', '.clickable', function() {
+        $(".suggestions-list-vi").on("click", ".clickable", function () {
             const selectedText = $(this).text();
-            const selectedIndex = $(this).data('index');
-            console.log(`Clicked on ${selectedText} with index ${selectedIndex}`);
-            $(this).closest('.vocab-info').find('.autocomplete-input-en').text(selectedText);
-            $(this).closest('.vocab-info').find('.suggestions-list-en').empty();
-        });
-
-        $('.suggestions-list-vi').on('click', '.clickable', function() {
-            const selectedText = $(this).text();
-            const selectedIndex = $(this).data('index');
-            console.log(`Clicked on ${selectedText} with index ${selectedIndex}`);
-            $(this).closest('.vocab-info').find('.autocomplete-input-vi').text(selectedText);
-            $(this).closest('.vocab-info').find('.suggestions-list-vi').empty();
+            const selectedIndex = $(this).data("index");
+            console.log(
+                `Clicked on ${selectedText} with index ${selectedIndex}`
+            );
+            $(this)
+                .closest(".vocab-info")
+                .find(".autocomplete-input-vi")
+                .text(selectedText);
+            $(this).closest(".vocab-info").find(".suggestions-list-vi").empty();
         });
 
         // Bắt sự kiện ctrl S
@@ -205,10 +240,12 @@ const AddSectionClassModule = (function () {
                 vocabularies: [],
             };
 
-            $(".vocab-list .vocab-info").each(function () {
+            $(".vocab-list .vocab-info").each(function (index) {
                 data.vocabularies.push({
+                    id: $(this).data("id") == 0 ? index : $(this).data("id"),
                     english_text: $(this).find(".english-text").text(),
                     vietnamese_text: $(this).find(".vietnamese-text").text(),
+                    order: index + 1,
                 });
             });
 
@@ -221,23 +258,41 @@ const AddSectionClassModule = (function () {
 
     const HandleSubmit = function () {
         try {
+            const sectionClassId = $("#section-class-id").val();
+            let data = GetData();
+            let isEdit = false;
+            if (sectionClassId != "0") {
+                data = {
+                    id: sectionClassId,
+                    ...data,
+                };
+                isEdit = true;
+            }
+
             $.ajax({
-                url: urls.create,
+                url: isEdit ? urls.edit : urls.create,
                 type: "POST",
                 dataType: "json",
-                data: GetData(),
+                data: data,
                 success: function (response) {
                     console.log("Response", response);
                     if (response.code === 200) {
-                        CommonModule.ShowModal(
-                            POP_UP_TYPE.SUCCESS,
-                            "Thành công",
-                            "Đã tạo mới thành công lớp học tập",
-                            function () {
-                                window.location.href =
-                                    urls.list_of_section_class_page;
-                            }
-                        );
+                        if (isEdit) {
+                            CommonModule.ShowToast(
+                                "success",
+                                "Lưu thành công."
+                            );
+                        } else {
+                            CommonModule.ShowModal(
+                                POP_UP_TYPE.SUCCESS,
+                                "Thành công",
+                                "Đã tạo mới thành công lớp học tập",
+                                function () {
+                                    window.location.href =
+                                        urls.list_of_section_class_page;
+                                }
+                            );
+                        }
                     } else {
                         CommonModule.ShowModal(
                             POP_UP_TYPE.ERROR,
@@ -265,19 +320,25 @@ const AddSectionClassModule = (function () {
     const GetSuggestionsEn = function (query, $suggestionsList) {
         try {
             $.ajax({
-                url: `/section_class/autocomplete_en?query=${encodeURIComponent(query)}`,
+                url: `/section_class/autocomplete_en?query=${encodeURIComponent(
+                    query
+                )}`,
                 type: "GET",
                 dataType: "json",
                 success: function (response) {
                     $suggestionsList.empty();
                     if (response.code === 200) {
-                        response.data.slice(0, 5).forEach(function (result, index) {
-                            const li = $('<li>')
-                                .addClass('clickable list-group-item list-group-item-action')
-                                .attr('data-index', index)
-                                .text(result);
-                            $suggestionsList.append(li);
-                        });
+                        response.data
+                            .slice(0, 5)
+                            .forEach(function (result, index) {
+                                const li = $("<li>")
+                                    .addClass(
+                                        "clickable list-group-item list-group-item-action"
+                                    )
+                                    .attr("data-index", index)
+                                    .text(result);
+                                $suggestionsList.append(li);
+                            });
                     }
                 },
                 error: function (error) {
@@ -285,12 +346,12 @@ const AddSectionClassModule = (function () {
                 },
                 complete: function () {
                     CommonModule.SetLoading(false);
-                }
+                },
             });
         } catch (error) {
             console.log("GetSuggestionsEn Error", error);
         }
-    }
+    };
 
     /**
      * Get suggestions from server for autocomplete vietnamese text
@@ -299,16 +360,20 @@ const AddSectionClassModule = (function () {
     const GetSuggestionsVi = function (query, $suggestionsList) {
         try {
             $.ajax({
-                url: `/section_class/autocomplete_vi?query=${encodeURIComponent(query)}`,
+                url: `/section_class/autocomplete_vi?query=${encodeURIComponent(
+                    query
+                )}`,
                 type: "GET",
                 dataType: "json",
                 success: function (response) {
                     $suggestionsList.empty();
                     if (response.code === 200) {
                         response.data.forEach(function (result, index) {
-                            const li = $('<li>')
-                                .addClass('clickable list-group-item list-group-item-action')
-                                .attr('data-index', index)
+                            const li = $("<li>")
+                                .addClass(
+                                    "clickable list-group-item list-group-item-action"
+                                )
+                                .attr("data-index", index)
                                 .text(result);
                             $suggestionsList.append(li);
                         });
@@ -319,12 +384,12 @@ const AddSectionClassModule = (function () {
                 },
                 complete: function () {
                     CommonModule.SetLoading(false);
-                }
+                },
             });
         } catch (error) {
             console.log("GetSuggestionsEn Error", error);
         }
-    }
+    };
 
     return {
         Init: Init,

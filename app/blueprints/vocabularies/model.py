@@ -20,4 +20,23 @@ def update_vocabulary(vocabulary: VocabularyCreateUpdate):
         }
     )
 
-    print("Vocabulary updated")
+
+def get_list_vocabularies(section_class_id: str):
+    vocabularies_ref = (
+        db.collection("section_class")
+        .document(section_class_id)
+        .collection("vocabularies")
+        .order_by("order", direction="ASCENDING")
+        .stream()
+    )
+
+    vocabularies = []
+    for vocabulary in vocabularies_ref:
+        vocabularies.append(
+            {
+                "id": vocabulary.id,
+                "english": vocabulary.to_dict()["english"],
+                "vietnamese": vocabulary.to_dict()["vietnamese"],
+            }
+        )
+    return vocabularies

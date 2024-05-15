@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            max-width: 400px;
+            margin: auto;
+        }
+        .calendar-day {
+            padding: 10px;
+            text-align: center;
+        }
+        .calendar-day.header {
+            font-weight: bold;
+        }
+        .calendar-day.today {
+            background-color: #f0f8ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="calendar" class="calendar"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const calendarElement = document.getElementById('calendar');
+
+            function renderCalendar(month, year) {
+                calendarElement.innerHTML = '';
+
+                // Headers for days of the week
+                const headers = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                headers.forEach(header => {
+                    const dayElement = document.createElement('div');
+                    dayElement.classList.add('calendar-day', 'header');
+                    dayElement.textContent = header;
+                    calendarElement.appendChild(dayElement);
+                });
+
+                const lastDayOfPreviousMonth = (new Date(year, month, 0)).getDate();
+                const firstDayOfCurrentMonth = new Date(year, month, 1);
+                const lastDayOfCurrentMonth = new Date(year, month + 1, 0);
+
+                // Trả về ngày trong tuần (0-6) của ngày đầu tiên của tháng
+                const startDay = firstDayOfCurrentMonth.getDay();
+                const today = new Date();
+
+                // Create empty cells before the first day of the month
+                for (let i = 0; i < startDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.classList.add('calendar-day');
+                    emptyCell.textContent = lastDayOfPreviousMonth - startDay + i + 1;
+                    calendarElement.appendChild(emptyCell);
+                }
+
+                // Create cells for each day of the month
+                for (let day = 1; day <= lastDayOfCurrentMonth.getDate(); day++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.classList.add('calendar-day');
+                    dayElement.textContent = day;
+
+                    // Highlight today's date
+                    if (day === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+                        dayElement.classList.add('today');
+                    }
+
+                    calendarElement.appendChild(dayElement);
+                }
+
+                const totalRows = Math.ceil((startDay + lastDayOfCurrentMonth.getDate()) / 7);
+                const remainingCells = totalRows * 7 - (startDay + lastDayOfCurrentMonth.getDate());
+                for (let i = 0; i < remainingCells; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.classList.add('calendar-day');
+                    emptyCell.textContent = i+1
+                    calendarElement.appendChild(emptyCell);
+                }
+            }
+
+            // Initialize calendar for the current month and year
+            const now = new Date();
+            renderCalendar(now.getMonth()-2, now.getFullYear());
+        });
+    </script>
+</body>
+</html>

@@ -1,11 +1,13 @@
 from . import section_class_bp, env
 from . import model
+from ..vocabularies.model import get_list_vocabularies
 from ..utils.helpers import render_template_util
 from ..utils.algoliasearch import autocomplete
 from ..utils.openai import get_definition_gpt
 from ...middlewares import login_required
 from flask import request, jsonify, redirect, url_for
 from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
+
 
 @section_class_bp.route("/", methods=["GET", "POST"])
 @login_required
@@ -51,13 +53,13 @@ def index():
 def create_set():
     """
     * Author: Phan Van Tai, created at: 28/04/2024
-    * Description: This function show a UI to create a new section class or update an existing one
+    * Description: This function is used for showing UI for creating a new section class
     """
     try:
         if request.method == "GET":
             return render_template_util(
                 env,
-                "create.html",
+                "create-edit.html",
                 title="Tạo học phần mới",
             )
         else:
@@ -79,6 +81,48 @@ def create_set():
             return jsonify({"code": 200})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
+
+
+@section_class_bp.route("/edit/<id>", methods=["GET", "POST"])
+@login_required
+def edit(id):
+    """
+    * Author: Phan Van Tai, created at: 14/05/2024
+    * Description: This function is used for viewing and editing a section class
+    """
+    if request.method == "GET":
+        try:
+            section_class_data = model.get_section_class_by_id(id)
+            return render_template_util(
+                env,
+                "create-edit.html",
+                title="Chỉnh sửa lớp học phần",
+                section_class_data=section_class_data,
+            )
+        except Exception as e:
+            return redirect(url_for("errors.not_found", message=str(e)))
+    else:
+        try:
+            data = request.get_json()
+            section_class_name = data["sectionClassName"]
+            if section_class_name is None or section_class_name == "":
+                return jsonify(
+                    {"code": 400, "message": "Tên học phần không được để trống"}
+                )
+
+            model.update_section_class(
+                SectionClassCreateUpdate(
+                    data["id"],
+                    section_class_name,
+                    data["sectionClassDesc"],
+                    data["vocabularies"],
+                    data["isPublic"],
+                )
+            )
+
+            return jsonify({"code": 200})
+        except Exception as e:
+            return jsonify({"code": 500, "message": str(e)})
 
 
 @section_class_bp.route("<id>", methods=["GET"])
@@ -107,9 +151,9 @@ def autocomplete_en():
     * Description: Auto complete search for English words with prefix matching.
     """
     try:
-        query = request.args.get('query', '')
+        query = request.args.get("query", "")
         results = autocomplete(query)
-        return jsonify({"code": 200, "data": [hit['word'] for hit in results['hits']]})
+        return jsonify({"code": 200, "data": [hit["word"] for hit in results["hits"]]})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
 
@@ -122,25 +166,27 @@ def autocomplete_vi():
     * Description: Auto complete search for English words with prefix matching.
     """
     try:
-        query = request.args.get('query', '')
+        query = request.args.get("query", "")
         results = autocomplete(query)
-        return jsonify({"code": 200, "data": [results['hits'][0]['translation']]})
+        return jsonify({"code": 200, "data": [results["hits"][0]["translation"]]})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
-    
-@section_class_bp.route("/get-definition", methods=['GET'])
+
+
+@section_class_bp.route("/get-definition", methods=["GET"])
 def get_definition_route():
     """
     * Author: Tran Dinh Manh, created at: 11/05/2024
     * Description: Get definition of a word from GPT.
     """
     try:
-        word = request.args.get('word')
+        word = request.args.get("word")
         definition = get_definition_gpt(word)
         return jsonify({"code": 200, "data": definition})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
-    
+
+
 @section_class_bp.route("exam/<id>", methods=["GET"])
 @login_required
 def section_class_exam(id):

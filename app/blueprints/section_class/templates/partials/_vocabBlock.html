@@ -20,14 +20,14 @@
     <div class="header d-flex justify-content-between">
     </div>
 
-    <div class="vocab-info d-flex justify-content-between">
+    <div class="vocab-info d-flex justify-content-between" data-id="{{vocab.id if vocab else 0 }}">
         <div class="column">
-            <div class="input english-text autocomplete-input-en" contenteditable="true" data-gramm="false"></div>
+            <div class="input english-text autocomplete-input-en" contenteditable="true" data-gramm="false">{{vocab.english if vocab else ''}}</div>
             <span>THUẬT NGỮ</span>
             <ul class="suggestions-list-en"></ul>
         </div>
         <div class="column">
-            <div class="input vietnamese-text autocomplete-input-vi" contenteditable="true" data-gramm="false"></div>
+            <div class="input vietnamese-text autocomplete-input-vi" contenteditable="true" data-gramm="false">{{vocab.vietnamese if vocab else ''}}</div>
             <span>ĐỊNH NGHĨA</span>
             <ul class="suggestions-list-vi"></ul>
         </div>

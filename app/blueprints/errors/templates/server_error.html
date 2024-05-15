@@ -1,0 +1,10 @@
+{% extends '_layout.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/errors/style.css') }}">
+{% endblock %}
+
+{% block content %}
+    <img class="img" src="{{ url_for('static', filename='images/not_found.png') }}" alt="not_found">
+    <h1>Server error {{ message }}</h1>
+{% endblock %}
