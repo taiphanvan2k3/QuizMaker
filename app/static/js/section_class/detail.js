@@ -106,6 +106,15 @@ const SectionClassDetailModule = (function () {
             HandleUpdateStar($(this));
             e.stopPropagation();
         });
+
+        $('.menu-item').hover(
+            function() {
+                $(this).find('.fa-book-copy').addClass('fa-bounce');
+            },
+            function() {
+                $(this).find('.fa-book-copy').removeClass('fa-bounce');
+            }
+        );
     };
 
     const HandleNextVocab = function ($btn) {

@@ -5,6 +5,8 @@ from .entities.SectionClassDetailDto import SectionClassDetailDto
 from flask import g
 from datetime import datetime
 import pytz
+import random
+from ..utils.openai import get_definition_gpt
 
 db = initialize_firestore()
 section_class_ref = db.collection("section_class")
@@ -121,3 +123,29 @@ def get_section_class_by_id(section_class_id: str):
         created_at={"actual": created_at, "simple": time_diff},
         vocabularies=vocabularies,
     )
+
+def create_quiz(vocabularies):
+    quiz = []
+    all_answers = [entry['english'] for entry in vocabularies]
+    for item in vocabularies:
+        rand = random.randint(0, 1)
+        question = {
+            'question': get_definition_gpt(item['english']) if rand == 1 else item['vietnamese'],
+        }
+        
+        correct_answer = item['english']
+        random_answers = random.sample(all_answers, 4)
+        
+        if correct_answer not in random_answers:
+            random_answers.pop()
+            random_answers.append(correct_answer)
+        
+        random.shuffle(random_answers)
+        ans_true_index = random_answers.index(correct_answer)
+        
+        question['answers'] = random_answers
+        question['ans_true'] = ans_true_index
+        
+        quiz.append(question)
+    
+    return quiz

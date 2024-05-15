@@ -1,16 +1,11 @@
 from . import section_class_bp, env
 from . import model
 from ..utils.helpers import render_template_util
+from ..utils.algoliasearch import autocomplete
+from ..utils.openai import get_definition_gpt
 from ...middlewares import login_required
 from flask import request, jsonify, redirect, url_for
 from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
-from algoliasearch.search_client import SearchClient
-
-client = SearchClient.create("KI4POLGT5H", "dfb2ba6c58d39ccb0a7b576db6ff2d32")
-algolia_index = client.init_index("vocab_en_vi_3000_freq")
-settings = {"searchableAttributes": ["word", "translation"]}
-algolia_index.set_settings(settings)
-
 
 @section_class_bp.route("/", methods=["GET", "POST"])
 @login_required
@@ -112,18 +107,10 @@ def autocomplete_en():
     * Description: Auto complete search for English words with prefix matching.
     """
     try:
-        query = request.args.get("query", "")
-        results = algolia_index.search(
-            query,
-            {
-                "attributesToRetrieve": ["word", "translation"],
-                "hitsPerPage": 5,
-                "restrictSearchableAttributes": ["word"],
-            },
-        )
-        return jsonify({"code": 200, "data": [hit["word"] for hit in results["hits"]]})
+        query = request.args.get('query', '')
+        results = autocomplete(query)
+        return jsonify({"code": 200, "data": [hit['word'] for hit in results['hits']]})
     except Exception as e:
-        print("error: ", e)
         return jsonify({"code": 500, "message": str(e)})
 
 
@@ -135,17 +122,40 @@ def autocomplete_vi():
     * Description: Auto complete search for English words with prefix matching.
     """
     try:
-        query = request.args.get("query", "")
-        results = algolia_index.search(
-            query,
-            {
-                "attributesToRetrieve": ["word", "translation"],
-                "hitsPerPage": 5,
-                "restrictSearchableAttributes": ["word"],
-            },
-        )
-        return jsonify(
-            {"code": 200, "data": [hit["translation"] for hit in results["hits"]]}
-        )
+        query = request.args.get('query', '')
+        results = autocomplete(query)
+        return jsonify({"code": 200, "data": [results['hits'][0]['translation']]})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
+    
+@section_class_bp.route("/get-definition", methods=['GET'])
+def get_definition_route():
+    """
+    * Author: Tran Dinh Manh, created at: 11/05/2024
+    * Description: Get definition of a word from GPT.
+    """
+    try:
+        word = request.args.get('word')
+        definition = get_definition_gpt(word)
+        return jsonify({"code": 200, "data": definition})
+    except Exception as e:
+        return jsonify({"code": 500, "message": str(e)})
+    
+@section_class_bp.route("exam/<id>", methods=["GET"])
+@login_required
+def section_class_exam(id):
+    """
+    * Author: Tran Dinh Manh, created at: 13/05/2024
+    * Description: Redirect to exam page of a section class.
+    """
+    section_class = model.get_section_class_by_id(id)
+    if section_class is None:
+        return redirect(url_for("errors.not_found"))
+    quizs = model.create_quiz(section_class.vocabularies)
+    return render_template_util(
+        env,
+        "exam.html",
+        title=f"Học phần: {section_class.name}",
+        title_exam=f"Kiểm tra từ vựng: {section_class.name}",
+        quizs=quizs,
+    )

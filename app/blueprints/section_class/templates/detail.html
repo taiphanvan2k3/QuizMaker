@@ -21,9 +21,17 @@
 
 {% block content %}
     <div class="header">
-        <div class="content d-flex justify-content-between align-items-center">
+        <div class="content d-flex align-items-center">
             <h2>{{ section_class.name }}</h2>
             <input type="hidden" id="section-class-id" value="{{ section_class.id }}">
+            <div class="menu-item">
+                <div class="d-flex">
+                    <a href="{{url_for('section_class.section_class_exam', id=section_class.id)}}">
+                        <!-- <b class=""><i class="fa-solid fa-person-chalkboard fa-xl m-r-10" style="color: #4255ff;"></i>Kiểm tra</b> -->
+                        <b class=""><i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>Kiểm tra</b>
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
     <div class="wrapper">

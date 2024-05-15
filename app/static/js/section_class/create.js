@@ -60,7 +60,7 @@ const AddSectionClassModule = (function () {
         $('.autocomplete-input-vi').on('input', function() {
             const query = $(this).closest('.vocab-info').find('.autocomplete-input-en').text();
             const $suggestionsList = $(this).closest('.vocab-info').find('.suggestions-list-vi');
-            if (query.length === 0 || $(this).text().length === 0){
+            if (query.length === 0){
                 $suggestionsList.empty();
                 return;
             }
@@ -305,7 +305,7 @@ const AddSectionClassModule = (function () {
                 success: function (response) {
                     $suggestionsList.empty();
                     if (response.code === 200) {
-                        response.data.slice(0, 5).forEach(function (result, index) {
+                        response.data.forEach(function (result, index) {
                             const li = $('<li>')
                                 .addClass('clickable list-group-item list-group-item-action')
                                 .attr('data-index', index)

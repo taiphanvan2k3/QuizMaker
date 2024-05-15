@@ -1,0 +1,63 @@
+{% extends '_layout.html' %}
+
+{% block css %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/section_class/exam.css')}}">
+{% endblock %}
+
+{% block script %}
+    <script>
+        var quizs = JSON.parse('{{ quizs|tojson }}')
+        var lenQuiz = quizs.length
+        var ansTrueArray = quizs.map(quiz => quiz.ans_true);
+    </script>
+    <script src="{{url_for('static', filename='js/section_class/exam.js')}}"></script>
+{% endblock %}
+
+{% block progress_bar %}
+<div class="progress-container">
+    <div class="progress-bar" role="progressbar" style="--progress: 0%;"></div>
+</div>
+{% endblock %}
+
+{% block content %}
+    <div class="header">
+        <div class="content d-flex align-items-center">
+            <h2>{{ title_exam }}</h2>
+        </div>
+    </div>
+    {% for quiz in quizs %}
+        <div class="wrapper">
+            <div class="flash-card-block">
+                <div id="card">
+                    <div class="side">
+                        <div class="choose-answer-title">Định nghĩa</div>
+                        <div class="question"><p>{{ quiz.question }}</p></div>
+                        <div class="choose-answer-title">Chọn thuật ngữ đúng</div>
+                        <div class="answers-grid">
+                            {% for answer in quiz.answers %}
+                                <button class="answer-btn" index-ans="{{ loop.index - 1 }}">{{ answer }}</button>
+                            {% endfor %}
+                        </div>
+                        <div class="text-quote m-l-r-auto">
+                            <span class="fw-bold">No pain no gain</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-buttons d-flex align-items-center">
+                    <div class="center-side d-flex align-items-center m-l-r-auto">
+                        <span class="counter"><b>{{ loop.index }} / {{ quizs|length }}</b></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="footer">
+        <div class="content">
+            <img class="m-l-r-auto d-block img-practice" src="{{url_for('static', filename='images/practice_test.svg')}}" alt="practice_test">
+            <h3 class="m-l-r-auto text-center text-complete">Tất cả đã xong! Bạn đã sẵn sàng gửi bài kiểm tra?</h3>
+            <div class="radial-progress m-l-r-auto" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="display: none;"></div>
+            <button class="m-l-r-auto btn-submit">Gửi bài kiểm tra</button>
+        </div>
+    </div>
+    <!-- {% include 'partials/_achievement.html' %} -->
+{% endblock  %}
