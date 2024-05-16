@@ -444,10 +444,41 @@ body {
     color: white;
 }
 
+#sharingModal .modal-content {
+    padding: 10px;
+}
+
 #sharingModal .modal-body {
     display: flex;
 }
 
 #sharingModal .modal-body .form-control {
     width: 80%;
+}
+
+.members {
+    padding: 0 10px;
+}
+
+.members .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.members .info {
+    display: flex;
+    flex-direction: column;
+}
+
+.members .info .email {
+    font-size: 1.2rem;
+    color: #44546F
+}
+
+.members-list .member-role {
+    padding: 4px 7px;
+    border: 2px solid #d9dde8;
+    border-radius: 10px;
+    font-size: 1.3rem;
 }

@@ -1,6 +1,5 @@
 from . import section_class_bp, env
 from . import model
-from ..vocabularies.model import get_list_vocabularies
 from ..utils.helpers import render_template_util
 from ..utils.algoliasearch import autocomplete
 from ..utils.openai import get_definition_gpt
@@ -209,3 +208,16 @@ def section_class_exam(id):
         quizs=quizs,
         active_menu="section_class"
     )
+
+
+# Các action liên quan đến members
+@section_class_bp.route("<id>/members", methods=["GET"])
+def get_all_members(id):
+    """
+    * Author: Phan Van Tai, created at: 16/05/2024
+    * Description: Get all members are in a section class
+    """
+    try:
+        return jsonify({"code": 200, "data": model.get_all_members(id)})
+    except Exception as e:
+        return jsonify({"code": 500, "message": str(e)})

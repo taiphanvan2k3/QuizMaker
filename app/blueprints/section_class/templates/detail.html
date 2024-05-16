@@ -9,6 +9,8 @@
         var vocabData = JSON.parse('{{ section_class.vocabularies|tojson|safe  }}');
         var urls = {
             update: "{{url_for('vocabularies.update', id=0)}}",
+            getMembers: "{{url_for('section_class.get_all_members', id=section_class.id)}}",
+            searchUsers: "{{url_for('users.search')}}",
         }
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
@@ -100,7 +102,9 @@
                 </div>
             </div>
             <div class="options">
-                <button data-bs-toggle="modal"
+                <button
+                    class="btn-share" 
+                    data-bs-toggle="modal"
                     data-bs-target="#sharingModal">
                     <i class="fa-solid fa-arrow-up-from-bracket m-r-5"></i>
                     Chia sẻ

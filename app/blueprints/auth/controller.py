@@ -71,4 +71,5 @@ def logout():
     """
     response = make_response(redirect("/"))
     response.delete_cookie("user_id", path="/")
+    response.delete_cookie("session_id", path="/")
     return response

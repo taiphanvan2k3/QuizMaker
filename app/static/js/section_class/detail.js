@@ -36,6 +36,8 @@ const SectionClassDetailModule = (function () {
         }
     };
 
+    let debounceTimeout;
+
     const InitEvents = function () {
         PreprocessingData();
         $("#card").on("click", function () {
@@ -107,14 +109,20 @@ const SectionClassDetailModule = (function () {
             e.stopPropagation();
         });
 
-        $('.menu-item').hover(
-            function() {
-                $(this).find('.fa-book-copy').addClass('fa-bounce');
+        $(".menu-item").hover(
+            function () {
+                $(this).find(".fa-book-copy").addClass("fa-bounce");
             },
-            function() {
-                $(this).find('.fa-book-copy').removeClass('fa-bounce');
+            function () {
+                $(this).find(".fa-book-copy").removeClass("fa-bounce");
             }
         );
+
+        $(".btn-share").on("click", GetCurrentMembers);
+
+        $("#search-email").on("input", function () {
+            SearchMembers($(this));
+        });
     };
 
     const HandleNextVocab = function ($btn) {
@@ -551,6 +559,58 @@ const SectionClassDetailModule = (function () {
         } catch (error) {
             console.log("UpdateVocabularyDataOnUI: ", error);
         }
+    };
+
+    const GetCurrentMembers = function () {
+        try {
+            $.ajax({
+                type: "GET",
+                dataType: "json",
+                url: urls.getMembers,
+                success: function (response) {
+                    if (response.code === 200) {
+                        $(".members-list").empty();
+
+                        const members = response.data.members;
+                        const pendingMembers = response.data.pending_members;
+                        const memberRowTemplate = $(".member-row-template")
+                            .clone()
+                            .removeClass("dis-none member-row-template")
+                            .addClass("d-flex");
+
+                        members.forEach((member) => {
+                            memberRowTemplate
+                                .find(".avatar")
+                                .attr("src", member.picture);
+                            memberRowTemplate
+                                .find(".display-name")
+                                .text(member.display_name);
+                            memberRowTemplate.find(".email").text(member.email);
+                            memberRowTemplate
+                                .find(".member-role")
+                                .text("Thành viên");
+                            $(".members-list").append(memberRowTemplate);
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+            });
+        } catch (error) {
+            console.log("GetCurrentMembers: ", error);
+        }
+    };
+
+    const SearchMembers = function ($input) {
+        // Sử dụng kĩ thuật debounce để tránh gửi request liên tục
+        const query = $input.val();
+        if (query.length < 3) return;
+        clearTimeout(debounceTimeout);
+
+        debounceTimeout = setTimeout(function () {
+            console.log(query);
+        }, 300);
     };
 
     return {
