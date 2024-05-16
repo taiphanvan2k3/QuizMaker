@@ -21,6 +21,7 @@ def get_all_section_classes(section_type="all"):
         query = query.where("owner_email", "==", current_user["email"])
     else:
         # Hiển thị tất cả học phần mà user tham gia
+        # query = query.where("members.email", "==", current_user["email"])
         query = query.where("members", "array_contains", current_user["email"])
     query = query.order_by("created_at", direction="DESCENDING")
 
@@ -31,6 +32,7 @@ def get_all_section_classes(section_type="all"):
     section_classes_groupby = {}
     for section in sections:
         section_data = section.to_dict()
+        
         owner = section_data["owner"].get()
         if owner.exists:
             owner = owner.to_dict()
@@ -64,11 +66,19 @@ def create_section_class(section_class: SectionClassCreateUpdate):
             "is_public": section_class.is_public,
             "owner": user_ref,  # Lưu một reference đến user tạo ra lớp học phần
             "owner_email": current_user["email"],
-            "members": [current_user["email"]],
+            "members": [
+                current_user["email"],
+            ],
             "created_at": datetime.now(timezone),
             "vocab_count": len(section_class.vocabularies),
         }
     )
+
+    # Ngay sau khi tạo lớp học phần, tạo sub-collection cho logs truy cập
+    access_log_ref = new_section_class_ref[1].collection("members_access_logs").document(current_user["email"])
+    access_log_ref.set({
+        "logs": datetime.now(timezone)
+    })
 
     # Tạo 1 sub-collection vocabularies cho lớp học phần mới
     # Do new_section_class_ref chứa 2 phần tử (DateTime, DocumentReference)
@@ -128,10 +138,24 @@ def update_section_class(section_class: SectionClassCreateUpdate):
 
 def get_section_class_by_id(section_class_id: str):
     section_class_doc = section_class_ref.document(section_class_id).get(
-        ["name", "description", "created_at", "is_public"]
+        ["name", "description", "created_at", "is_public", "members"]
     )
     if not section_class_doc.exists:
         return None
+
+    # Cập nhật thời gian truy cập gần nhất
+    last_accessed = datetime.now(timezone)
+    current_user = g.user_info
+    
+    # Truy cập subcollection để cập nhật last_accessed
+    log_ref = section_class_doc.reference.collection("members_access_logs").document(current_user["email"])
+    log_doc = log_ref.get()
+    if log_doc.exists:
+        # Cập nhật last_accessed nếu document đã tồn tại
+        log_ref.update({"logs": last_accessed})
+    else:
+        # Tạo mới nếu chưa tồn tại
+        log_ref.set({"logs": last_accessed})
 
     # Lấy danh sách vocabulary của lớp học phần
     vocabularies_ref = (
@@ -170,28 +194,112 @@ def get_section_class_by_id(section_class_id: str):
         is_public=section_class_doc.get("is_public"),
     )
 
+
 def create_quiz(vocabularies):
     quiz = []
-    all_answers = [entry['english'] for entry in vocabularies]
+    all_answers = [entry["english"] for entry in vocabularies]
     for item in vocabularies:
         rand = random.randint(0, 1)
         question = {
-            'question': get_definition_gpt(item['english']) if rand == 1 else item['vietnamese'],
+            "question": (
+                get_definition_gpt(item["english"]) if rand == 1 else item["vietnamese"]
+            ),
         }
-        
-        correct_answer = item['english']
+
+        correct_answer = item["english"]
         random_answers = random.sample(all_answers, 4)
-        
+
         if correct_answer not in random_answers:
             random_answers.pop()
             random_answers.append(correct_answer)
-        
+
         random.shuffle(random_answers)
         ans_true_index = random_answers.index(correct_answer)
-        
-        question['answers'] = random_answers
-        question['ans_true'] = ans_true_index
-        
+
+        question["answers"] = random_answers
+        question["ans_true"] = ans_true_index
+
         quiz.append(question)
-    
+
     return quiz
+
+
+# def get_recent_section_classes():
+#     current_user = g.user_info
+#     email = current_user["email"]
+
+#     # Truy vấn tất cả các section_class mà người dùng là thành viên
+#     sections = section_class_ref.where("members", "array_contains", email).stream()
+
+#     user_ref = db.collection("users").document(current_user["id"])
+#     user_doc = user_ref.get()
+    
+#     if user_doc.exists:
+#         user_data = user_doc.to_dict()
+#         display_name = user_data.get("display_name", "Unknown")
+#         picture = user_data.get("picture", "default_picture.jpg")
+#     else:
+#         display_name = "Unknown"
+#         picture = "default_picture.jpg"
+
+#     recent_section_classes = []
+#     for section in sections:
+#         section_data = section.to_dict()
+#         owner = section_data["owner"].get()
+#         if owner.exists:
+#             owner = owner.to_dict()
+
+#         current_section_class = SectionClassDto(
+#             section.id,
+#             section_data["name"],
+#             display_name,
+#             picture,
+#             section_data["vocab_count"],
+#         )
+        
+#         recent_section_classes.append(current_section_class)
+
+#     return recent_section_classes
+
+def get_recent_section_classes():
+    current_user = g.user_info
+    email = current_user["email"]
+
+    # Truy vấn tất cả các section_class mà người dùng là thành viên
+    query = section_class_ref.where("members", "array_contains", email).stream()
+
+    user_ref = db.collection("users").document(current_user["id"])
+    user_doc = user_ref.get()
+
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+        display_name = user_data.get("display_name", "Unknown")
+        picture = user_data.get("picture", "default_picture.jpg")
+    else:
+        display_name = "Unknown"
+        picture = "default_picture.jpg"
+
+    sections = []
+    for section in query:
+        section_data = section.to_dict()
+        section_id = section.id
+        section_data["display_name"] = display_name
+        section_data["picture"] = picture
+        section_data["id"] = section_id
+
+        # Lấy thông tin last_accessed từ subcollection members_access_logs
+        access_log_ref = section_class_ref.document(section_id).collection("members_access_logs").document(email)
+        access_log = access_log_ref.get()
+        if access_log.exists:
+            last_accessed = access_log.to_dict()["logs"]
+            section_data["user_last_accessed"] = last_accessed
+            sections.append(section_data)
+
+    # Sắp xếp các section dựa trên last_accessed của người dùng hiện tại
+    sorted_sections = sorted(sections, key=lambda x: x["user_last_accessed"], reverse=True)
+
+    # Lấy top 3
+    recent_section_classes = sorted_sections[:3]
+
+    return recent_section_classes
+

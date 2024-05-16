@@ -25,6 +25,7 @@ def index():
             title="Danh sách học phần",
             sections=model.get_all_section_classes(section_type),
             sectionType=section_type,
+            active_menu="section_class"
         )
     elif request.method == "POST":
         response_info = {}
@@ -61,6 +62,7 @@ def create_set():
                 env,
                 "create-edit.html",
                 title="Tạo học phần mới",
+                active_menu="section_class"
             )
         else:
             data = request.get_json()
@@ -140,6 +142,7 @@ def section_class_detail(id):
         "detail.html",
         title=f"Học phần: {section_class.name}",
         section_class=section_class,
+        active_menu="section_class"
     )
 
 
@@ -204,4 +207,5 @@ def section_class_exam(id):
         title=f"Học phần: {section_class.name}",
         title_exam=f"Kiểm tra từ vựng: {section_class.name}",
         quizs=quizs,
+        active_menu="section_class"
     )

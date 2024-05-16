@@ -48,8 +48,8 @@ const CreateEditSectionClassModule = (function () {
             }
         });
 
-        $(".autocomplete-input-en")
-            .on("input", function () {
+        $(document)
+            .on("input", ".autocomplete-input-en", function () {
                 const query = $(this).text();
                 const $suggestionsList = $(this)
                     .closest(".vocab-info")
@@ -60,7 +60,7 @@ const CreateEditSectionClassModule = (function () {
                 }
                 GetSuggestionsEn(query, $suggestionsList);
             })
-            .on("focusout", function () {
+            .on("focusout", ".autocomplete-input-en", function () {
                 const $input = $(this);
                 setTimeout(function () {
                     if (!$input.is(":focus")) {
@@ -72,8 +72,8 @@ const CreateEditSectionClassModule = (function () {
                 }, 300);
             });
 
-        $(".autocomplete-input-vi")
-            .on("input", function () {
+        $(document)
+            .on("input", ".autocomplete-input-vi", function () {
                 const query = $(this)
                     .closest(".vocab-info")
                     .find(".autocomplete-input-en")
@@ -87,7 +87,7 @@ const CreateEditSectionClassModule = (function () {
                 }
                 GetSuggestionsVi(query, $suggestionsList);
             })
-            .on("focusout", function () {
+            .on("focusout", ".autocomplete-input-vi", function () {
                 const $input = $(this);
                 setTimeout(function () {
                     if (!$input.is(":focus")) {
@@ -99,7 +99,7 @@ const CreateEditSectionClassModule = (function () {
                 }, 300);
             });
 
-        $(".suggestions-list-en").on("click", ".clickable", function () {
+        $(document).on("click", ".suggestions-list-en .clickable", function () {
             const selectedText = $(this).text();
             const selectedIndex = $(this).data("index");
             console.log(
@@ -112,7 +112,7 @@ const CreateEditSectionClassModule = (function () {
             $(this).closest(".vocab-info").find(".suggestions-list-en").empty();
         });
 
-        $(".suggestions-list-vi").on("click", ".clickable", function () {
+        $(document).on("click", ".suggestions-list-vi .clickable", function () {
             const selectedText = $(this).text();
             const selectedIndex = $(this).data("index");
             console.log(
