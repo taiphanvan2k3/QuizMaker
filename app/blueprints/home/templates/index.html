@@ -1,11 +1,27 @@
-{% extends '_layout.html' %}
-
-{% block css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/home/index.css') }}">
-{% endblock %}
-
-{% block content %}
-    <h1>Welcome to the Home Page</h1>
-    <button class="btn btn-primary">Hello</button>
-    <button class="btn btn-primary">Xin chào</button>
+{% extends '_layout.html' %} {% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home/index.css') }}" />
+{% endblock %} {% block content %}
+<div class="recent-block">
+    <span class="recent-title">Truy cập gần đây</span>
+    <div class="table-recent">
+        {% for section_class in recent_section_classes %}
+            <div class="set-preview-card" data-testid="set-preview-card">
+                <div class="set-preview-card-metadata">
+                    <div class="set-preview-card-header">
+                        <a class="section-name" href="{{url_for('section_class.section_class_detail', id=section_class.id)}}"><span>{{ section_class.name }}</span></a>
+                        <div class="term-block">
+                            <span class="term-number">{{ section_class.vocab_count }} thuật ngữ</span>
+                        </div>
+                    </div>
+                    <div class="set-preview-card-footer">
+                        <span class="d-inline-flex align-items-center">
+                            <img class="section-item__owner-avatar m-r-3" src="{{ section_class.picture }}" alt="" />
+                            <b class="section-item__created-by">{{ section_class.display_name }}</b>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}
