@@ -331,7 +331,7 @@ def share_to_user(id, email):
             "notifications"
         ).add(
             {
-                "type": "invite to section class",
+                "type": "đã mời bạn vào lớp học phần",
                 "section_class_id": id,
                 "section_class_name": section_class_name,
                 "from": sender_ref,

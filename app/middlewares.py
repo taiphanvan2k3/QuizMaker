@@ -73,5 +73,5 @@ def cookie_renewal(response):
         expire_time = datetime.datetime.now(
             pytz.timezone("Asia/Ho_Chi_Minh")
         ) + datetime.timedelta(hours=12)
-        # response.set_cookie("user_id", session["user_id"], expires=expire_time)
+        response.set_cookie("user_id", session["user_id"], expires=expire_time)
     return response

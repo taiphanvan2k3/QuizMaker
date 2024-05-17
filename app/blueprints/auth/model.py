@@ -45,3 +45,9 @@ def save_access_token(user_id, access_token, expires_in):
             "expires_at": datetime.now() + timedelta(seconds=expires_in),
         }
     )
+
+
+def get_firebase_configure():
+    return (
+        db.collection("client_api_key").document("FP8dR7vhdNGhzzhVmVTd").get().to_dict()
+    )

@@ -143,6 +143,7 @@ button:disabled {
 	display: flex;
 	align-items: center;
 	position: relative;
+	margin-top: -5px;
 }
 
 .container .top-navigation .middle-content .search-box .icon {
@@ -167,6 +168,81 @@ button:disabled {
 	width: 3.8rem;
 	height: 3.65rem;
 	margin-right: 10px;
+	border-radius: 50%;
+}
+
+.btn-notification+.dropdown-menu {
+	width: 400px;
+	margin-top: 2px !important;
+	max-height: 400px;
+	overflow-y: auto;
+}
+
+.btn-notification+.dropdown-menu:not(:has(.notification-item)) {
+	min-height: 200px;
+	position: relative;
+	background: url(../images/empty-notification.jpg) no-repeat center 10px;
+	background-color: #fff;
+	background-size: 35%;
+}
+
+.btn-notification+.dropdown-menu:not(:has(.notification-item))::after {
+	content: "No new notifications";
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 1.5rem;
+}
+
+.notification-item {
+	padding: 10px;
+}
+
+.notification-item:hover {
+	background-color: #f6f7fb;
+	cursor: pointer;
+}
+
+.notification-item .avatar {
+	width: 23px;
+	height: 23px;
+	border-radius: 50%;
+}
+
+.notification-item .sender-name,
+.notification-item .message,
+.notification-item .section-class-name {
+	font-size: 1.3rem;
+}
+
+/* Làm hiệu ứng nhấp nháy khi có thông báo mới */
+@keyframes notificationBlink {
+	0% {
+		background-color: transparent;
+	}
+
+	50% {
+		background-color: red;
+	}
+
+	100% {
+		background-color: transparent;
+	}
+}
+
+.notification-group {
+	position: relative;
+}
+
+.notification-blink {
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	top: -2px;
+	right: 1px;
+	animation: notificationBlink 1s infinite;
 }
 
 .container .right-content .btn-notification {

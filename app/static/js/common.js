@@ -3,15 +3,6 @@ const POP_UP_TYPE = {
     ERROR: "error",
 };
 
-// Nhận dữ liệu từ SSE
-const eventSource = new EventSource("/users/notifications");
-
-eventSource.onmessage = function (event) {
-    // Xử lý dữ liệu nhận được từ server
-    const data = JSON.parse(event.data);
-    console.log(data);
-};
-
 const CommonModule = {
     /**
      * Thay đổi URL hiện tại của trang mà không gây reload trang
@@ -158,5 +149,17 @@ const CommonModule = {
                 origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
             });
         }, 250);
+    },
+
+    GetCookie: function (name) {
+        let cookieName = name + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let cookies = decodedCookie.split(";");
+        console.log(cookies);
+        for (let cookie of cookies) {
+            if (cookie.trim().startsWith(cookieName)) {
+                return cookie.substring(cookieName.length);
+            }
+        }
     },
 };
