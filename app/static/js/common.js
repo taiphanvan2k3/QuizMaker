@@ -3,6 +3,15 @@ const POP_UP_TYPE = {
     ERROR: "error",
 };
 
+// Nhận dữ liệu từ SSE
+const eventSource = new EventSource("/users/notifications");
+
+eventSource.onmessage = function (event) {
+    // Xử lý dữ liệu nhận được từ server
+    const data = JSON.parse(event.data);
+    console.log(data);
+};
+
 const CommonModule = {
     /**
      * Thay đổi URL hiện tại của trang mà không gây reload trang
@@ -36,11 +45,14 @@ const CommonModule = {
                     typeof options.data != "string"
                 ) {
                     options.data = JSON.stringify(options.data);
+                    console.log(options.data);
                 }
                 if (options.global && options.type !== "GET") {
-                    console.log("loading");
                     module.SetLoading(true);
                 }
+            },
+            complete: function () {
+                module.SetLoading(false);
             },
         });
     },

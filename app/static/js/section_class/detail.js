@@ -104,7 +104,6 @@ const SectionClassDetailModule = (function () {
         });
 
         $(".vocabulary-item .btn-star").on("click", function (e) {
-            console.log("btn-star click");
             HandleUpdateStar($(this));
             e.stopPropagation();
         });
@@ -121,8 +120,20 @@ const SectionClassDetailModule = (function () {
         $(".btn-share").on("click", GetCurrentMembers);
 
         $("#search-email").on("input", function () {
-            SearchMembers($(this));
+            SearchUsers($(this));
         });
+
+        $(document).on("click", ".new-user-element", function () {
+            $("#search-email").val($(this).find(".email").text());
+            $(".suggestion-users").empty();
+        });
+
+        $("#sharingModal").on("click", function () {
+            $(".suggestion-users").empty();
+        });
+
+        $(".btn-submit-share").prop("disabled", true);
+        $(".btn-submit-share").on("click", HandleSharingToUser);
     };
 
     const HandleNextVocab = function ($btn) {
@@ -482,6 +493,7 @@ const SectionClassDetailModule = (function () {
                 url: previousEditedVocabulary.url,
                 type: "POST",
                 data: data,
+                dataType: "json",
                 success: function (response) {
                     if (response.code === 200) {
                         CommonModule.ShowToast("success", "Lưu thành công.");
@@ -495,6 +507,7 @@ const SectionClassDetailModule = (function () {
                     }
                 },
                 error: function (error) {
+                    console.log(error);
                     CommonModule.ShowToast(
                         "error",
                         "Có lỗi xảy ra khi gửi yêu cầu."
@@ -561,6 +574,19 @@ const SectionClassDetailModule = (function () {
         }
     };
 
+    let currentMembers = new Set();
+    const LoadUsersToUI = function (template, users, type) {
+        users.forEach((user) => {
+            currentMembers.add(user.email);
+            const newMemberRowTemplate = template.clone();
+            newMemberRowTemplate.find(".avatar").attr("src", user.picture);
+            newMemberRowTemplate.find(".display-name").text(user.display_name);
+            newMemberRowTemplate.find(".email").text(user.email);
+            newMemberRowTemplate.find(".member-role").text(type);
+            $(".members-list").append(newMemberRowTemplate);
+        });
+    };
+
     const GetCurrentMembers = function () {
         try {
             $.ajax({
@@ -578,19 +604,12 @@ const SectionClassDetailModule = (function () {
                             .removeClass("dis-none member-row-template")
                             .addClass("d-flex");
 
-                        members.forEach((member) => {
-                            memberRowTemplate
-                                .find(".avatar")
-                                .attr("src", member.picture);
-                            memberRowTemplate
-                                .find(".display-name")
-                                .text(member.display_name);
-                            memberRowTemplate.find(".email").text(member.email);
-                            memberRowTemplate
-                                .find(".member-role")
-                                .text("Thành viên");
-                            $(".members-list").append(memberRowTemplate);
-                        });
+                        LoadUsersToUI(memberRowTemplate, members, "Thành viên");
+                        LoadUsersToUI(
+                            memberRowTemplate,
+                            pendingMembers,
+                            "Đang chờ"
+                        );
                     }
                 },
                 error: function (error) {
@@ -602,15 +621,100 @@ const SectionClassDetailModule = (function () {
         }
     };
 
-    const SearchMembers = function ($input) {
+    const SearchUsers = function ($input) {
         // Sử dụng kĩ thuật debounce để tránh gửi request liên tục
         const query = $input.val();
-        if (query.length < 3) return;
+        if (query.length < 3) {
+            $(".suggestion-users").empty();
+            $(".btn-submit-share").prop("disabled", true);
+            return;
+        }
+        $(".btn-submit-share").prop("disabled", false);
         clearTimeout(debounceTimeout);
 
         debounceTimeout = setTimeout(function () {
-            console.log(query);
-        }, 300);
+            SearchUsersHandler(query);
+        }, 200);
+    };
+
+    const SearchUsersHandler = function (query) {
+        try {
+            $.ajax({
+                url: urls.searchUsers,
+                type: "GET",
+                data: { query },
+                success: function (response) {
+                    if (response.code === 200) {
+                        const users = response.data;
+                        $(".suggestion-users").empty();
+
+                        const userElement = $(
+                            ".suggestion-user-template.dis-none"
+                        )
+                            .clone()
+                            .removeClass("dis-none");
+                        users.forEach((user) => {
+                            if (!currentMembers.has(user.email)) {
+                                const newUserElement = userElement
+                                    .clone()
+                                    .addClass("new-user-element");
+
+                                newUserElement
+                                    .find(".avatar")
+                                    .attr("src", user.picture);
+                                newUserElement
+                                    .find(".display-name")
+                                    .text(user.display_name);
+                                newUserElement.find(".email").text(user.email);
+                                $(".suggestion-users").append(newUserElement);
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                },
+                complete: function () {
+                    CommonModule.SetLoading(false);
+                },
+            });
+        } catch (error) {
+            console.log("SearchUsersHandler: ", error);
+        }
+    };
+
+    const HandleSharingToUser = function () {
+        try {
+            $.ajax({
+                url: urls.shareToUser,
+                dataType: "json",
+                type: "POST",
+                data: {
+                    email: $("#search-email").val(),
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response.code === 200) {
+                        $("#search-email").val("");
+                        CommonModule.ShowToast("success", "Đã gửi yêu cầu.");
+
+                        // Trigger lại sự kiện để load lại danh sách thành viên
+                        GetCurrentMembers();
+                    } else {
+                        CommonModule.ShowToast("error", response.message);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    CommonModule.ShowToast(
+                        "error",
+                        "Có lỗi xảy ra khi gửi yêu cầu."
+                    );
+                },
+            });
+        } catch (error) {
+            console.log("HandleSharingToUser: ", error);
+        }
     };
 
     return {

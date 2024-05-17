@@ -9,6 +9,7 @@
             <div class="modal-header">
                 <h1 class="modal-title fs-16">
                     Chia sẻ học phần
+                    <img src="{{url_for('static', filename='images/loading.gif')}}" alt="" id="loading-icon">
                 </h1>
                 <button
                     type="button"
@@ -19,7 +20,18 @@
             </div>
             <div class="modal-body d-flex align-items-center justify-content-between gap-10">
                 <input type="text" id="search-email" class="form-control" placeholder="Nhập địa chỉ email của bạn bè"/>
-                <button class="btn btn-sm btn-primary">Chia sẻ</button>
+                <button class="btn btn-sm btn-primary btn-submit-share">Chia sẻ</button>
+            </div>
+            <div class="suggestion-result">
+                <div class="suggestion-users custom-scroll">
+                </div>
+            </div>
+            <div class="suggestion-user-template dis-none">
+                <img class="avatar" src="" alt="" />
+                <div class="info">
+                    <span class="display-name"></span>
+                    <span class="email"></span>
+                </div>
             </div>
             <div class="members">
                 <div class="member-row-template dis-none align-items-center justify-content-between">

@@ -221,3 +221,17 @@ def get_all_members(id):
         return jsonify({"code": 200, "data": model.get_all_members(id)})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
+
+
+@section_class_bp.route("<id>/share-to-user", methods=["POST"])
+def share_to_user(id):
+    """
+    * Author: Phan Van Tai, created at: 16/05/2024
+    * Description: Add a new member to a section class (save to pending members)
+    """
+    try:
+        data = request.form
+        model.share_to_user(id, data["email"])
+        return jsonify({"code": 200})
+    except Exception as e:
+        return jsonify({"code": 500, "message": str(e)})

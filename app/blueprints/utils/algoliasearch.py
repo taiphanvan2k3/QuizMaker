@@ -7,6 +7,9 @@ vocab_index.set_settings(settings)
 
 # User index
 user_index = client.init_index("users")
+user_settings = {
+    "searchableAttributes": ["display_name", "email"],
+}
 
 
 def autocomplete(text):
@@ -45,11 +48,13 @@ def get_user_by_query(query):
     search_result = user_index.search(
         query,
         {
-            "attributesToRetrieve": ["display_name", "email"],
+            # danh sách các trường cần lấy
+            "attributesToRetrieve": [
+                "display_name",
+                "email",
+                "picture",
+            ],
             "hitsPerPage": 5,
-            "attributesToHighlight": [
-                "picture"
-            ],  # Bổ sung trường 'picture' để nó được trả về
         },
     )
 
@@ -58,9 +63,7 @@ def get_user_by_query(query):
         {
             "email": hit["email"],
             "display_name": hit["display_name"],
-            "picture": hit.get("_highlightResult", {})
-            .get("picture", {})
-            .get("value", ""),
+            "picture": hit["picture"],
         }
         for hit in hits
     ]

@@ -1,4 +1,4 @@
-from ..utils.firestore_utils import initialize_firestore
+from ..utils.firestore_utils import initialize_firestore, firestore
 from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
 from .entities.SectionClassDto import SectionClassDto
 from .entities.SectionClassDetailDto import SectionClassDetailDto
@@ -312,3 +312,29 @@ def get_members_info(emails):
                 }
             )
     return members
+
+
+def share_to_user(id, email):
+    current_section_class_ref = section_class_ref.document(id)
+    current_section_class_ref.update({"pending_members": firestore.ArrayUnion([email])})
+
+    # Lấy thông tin lớp học
+    current_section_class_ref = current_section_class_ref.get()
+    section_class_name = current_section_class_ref.to_dict().get("name")
+
+    # Thêm vào collection user_notifications của user nhận
+    user = db.collection("users").where("email", "==", email).get()
+    sender_ref = db.collection("users").document(g.user_info["id"])
+    sender_data = sender_ref.get()
+    if user[0].exists and sender_data.exists:
+        db.collection("user_notifications").document(user[0].id).collection(
+            "notifications"
+        ).add(
+            {
+                "type": "invite to section class",
+                "section_class_id": id,
+                "section_class_name": section_class_name,
+                "from": sender_ref,
+                "created_at": datetime.now(timezone),
+            }
+        )
