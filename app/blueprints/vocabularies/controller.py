@@ -1,5 +1,4 @@
-from . import vocabularies_bp, env
-from ..utils.helpers import render_template_util
+from . import vocabularies_bp
 from flask import request, jsonify
 from .entities.VocabularyCreateUpdate import VocabularyCreateUpdate
 from .model import update_vocabulary

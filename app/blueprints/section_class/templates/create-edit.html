@@ -23,7 +23,14 @@
     <div class="header">
         <div class="content d-flex justify-content-between align-items-center">
             <h1 class="title">
-                {{ "Chỉnh sửa lớp học phần" if is_edit else "Tạo lớp học phần" }}
+                {% if is_edit %}
+                    <a href="{{url_for('section_class.section_class_detail', id=section_class_data.id)}}" class="comeback">
+                        <i class="fa-solid fa-chevron-left fa-2xs"></i>
+                        <span>Trở về học phần</span>
+                    </a>
+                {% else %}
+                    <span>Tạo lớp học phần</span>
+                {% endif %}
                 <img src="{{url_for('static', filename='images/loading.gif')}}" alt="" id="loading-icon">
             </h1>
             <button class="btn btn-primary rounded-2 btn-create">

@@ -36,11 +36,14 @@ const CommonModule = {
                     typeof options.data != "string"
                 ) {
                     options.data = JSON.stringify(options.data);
+                    console.log(options.data);
                 }
                 if (options.global && options.type !== "GET") {
-                    console.log("loading");
                     module.SetLoading(true);
                 }
+            },
+            complete: function () {
+                module.SetLoading(false);
             },
         });
     },
@@ -146,5 +149,17 @@ const CommonModule = {
                 origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
             });
         }, 250);
+    },
+
+    GetCookie: function (name) {
+        let cookieName = name + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let cookies = decodedCookie.split(";");
+        console.log(cookies);
+        for (let cookie of cookies) {
+            if (cookie.trim().startsWith(cookieName)) {
+                return cookie.substring(cookieName.length);
+            }
+        }
     },
 };

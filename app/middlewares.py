@@ -65,6 +65,9 @@ def cookie_renewal(response):
     if not request.endpoint or request.endpoint.startswith("static"):
         return response
 
+    if request.endpoint.startswith("auth") and request.endpoint != login_endpoint:
+        return response
+
     # Cập nhật lại cookie user_id
     if "user_id" in session:
         expire_time = datetime.datetime.now(

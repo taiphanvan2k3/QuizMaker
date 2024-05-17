@@ -9,6 +9,9 @@
         var vocabData = JSON.parse('{{ section_class.vocabularies|tojson|safe  }}');
         var urls = {
             update: "{{url_for('vocabularies.update', id=0)}}",
+            getMembers: "{{url_for('section_class.get_all_members', id=section_class.id)}}",
+            searchUsers: "{{url_for('users.search')}}",
+            shareToUser: "{{url_for('section_class.share_to_user', id=section_class.id)}}",
         }
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
@@ -25,7 +28,8 @@
             <div class="menu-item">
                 <div class="d-flex">
                     <a href="{{url_for('section_class.section_class_exam', id=section_class.id)}}">
-                        <b class=""><i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>Kiểm tra</b>
+                        <i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>
+                        <span>Kiểm tra</span>
                     </a>
                 </div>
             </div>
@@ -43,7 +47,8 @@
                 </div>
                 <div class="side back">
                     <p>
-                        {{ section_class.vocabularies[0].vietnamese }}</p>
+                        {{ section_class.vocabularies[0].vietnamese }}
+                    </p>
                 </div>
                 <div class="overlay-message learned-message">
                     <p>Đã biết</p>
@@ -98,7 +103,10 @@
                 </div>
             </div>
             <div class="options">
-                <button>
+                <button
+                    class="btn-share" 
+                    data-bs-toggle="modal"
+                    data-bs-target="#sharingModal">
                     <i class="fa-solid fa-arrow-up-from-bracket m-r-5"></i>
                     Chia sẻ
                 </button>
@@ -108,6 +116,7 @@
                 <button>
                     <i class="fa-solid fa-ellipsis"></i>
                 </button>
+                {% include 'partials/_sharing-modal.html' %}
             </div>
         </div>
 

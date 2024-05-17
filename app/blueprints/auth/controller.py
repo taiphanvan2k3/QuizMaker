@@ -1,7 +1,7 @@
 from . import auth_bp, env, oauth
 from . import model
 from ..utils.helpers import render_template_util
-from flask import redirect, make_response, g, url_for, session
+from flask import redirect, make_response, g, url_for, session, jsonify
 
 
 # Route cho trang chủ
@@ -71,4 +71,18 @@ def logout():
     """
     response = make_response(redirect("/"))
     response.delete_cookie("user_id", path="/")
+    response.delete_cookie("session_id", path="/")
     return response
+
+
+@auth_bp.route("/firebase-configure", methods=["POST"])
+def get_firebase_configure():
+    """
+    * Author: Phan Van Tai, created at: 17/05/2024
+    * Description: Get firebase configure
+    """
+    try:
+        firebase_configure = model.get_firebase_configure()
+        return jsonify({"data": firebase_configure}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

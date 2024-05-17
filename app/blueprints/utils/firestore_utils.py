@@ -1,5 +1,6 @@
 from firebase_admin import credentials, firestore, initialize_app, get_app
 
+
 def initialize_firestore():
     try:
         # Kiểm tra xem ứng dụng Firebase đã được khởi tạo chưa

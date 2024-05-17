@@ -6,11 +6,26 @@
         padding: 10px 20px;
         font-size: 16px;
     }
+
+    .left-content {
+        margin-left: 20px;
+    }
+
+    .left-content .web-name {
+        margin-top: -12px;
+    }
+
+    .left-content .web-name span {
+        color: #4255ff;
+        font-weight: 700;
+        font-size: 26px;
+    }
 </style>
+
 <div class="content d-flex align-items-center">
     <div class="left-content">
-        <div>
-            <img src="{{url_for('static', filename='images/logo.png')}}" alt="" class="logo">
+        <div class="web-name">
+            <span>QuizMaker</span>
         </div>
         <div class="navigation-tabs">
             <ul class="items">
@@ -51,9 +66,26 @@
                 </a>
             </ul>
         </div>
-        <button class="btn btn-notification icon">
-            <i class="fa-regular fa-bell"></i>
-        </button>
+        <div class="btn-group m-l-10 m-r-10 notification-group">
+            <button class="btn btn-notification icon" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-bell"></i>
+                <div class="notification-blink dis-none"></div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end custom-scroll">
+            </ul>
+            <div class="dropdown-item-template dis-none">
+                <div class="notification-item d-flex align-items-center gap-10">
+                    <img class="avatar" src="" alt="" />
+                    <div class="info d-flex flex-column">
+                        <b class="sender-name"></b>
+                        <div class="detail">
+                            <span class="message"></span>
+                            <b class="section-class-name"></b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <span id="user-name">{{g.user_info.display_name if g.user_info else "Guest"}}</span>
         <div class="btn-group m-l-10 m-r-10">
             <button class="btn btn-profile" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -61,6 +93,7 @@
             </button>
             <ul class="dropdown-menu">
                 {% if g.user_info %}
+                    <input type="hidden" id="user-id" value="{{g.user_info['id']}}">
                     <li><a class="dropdown-item" id="profile" href="#">Thông tin cá nhân</a></li>
                     <li><a class="dropdown-item" id="logout" href="{{ url_for('auth.logout') }}">Đăng xuất</a></li>
                 {% else %}

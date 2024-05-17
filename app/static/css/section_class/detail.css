@@ -2,6 +2,25 @@ body {
     overflow-x: hidden;
 }
 
+.form-control {
+    font-size: 1.4rem;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.form-control:focus {
+    border-color: inset 0 0 0 2px #388BFF;
+    box-shadow: unset;
+}
+
+.header .content h2 {
+    margin-bottom: 0;
+}
+
+.header .content .menu-item span {
+    font-weight: 500;
+}
+
 .main-content {
     width: 80%;
     margin-left: auto;
@@ -418,4 +437,100 @@ body {
 .menu-item:hover {
     border-bottom-color: #a8b1ff;
     cursor: pointer;
+}
+
+/* Sharing modal */
+#sharingModal #loading-icon {
+    margin-top: -4px;
+}
+
+#sharingModal button {
+    color: white;
+}
+
+#sharingModal .modal-content {
+    padding: 10px;
+}
+
+#sharingModal .modal-body {
+    display: flex;
+}
+
+#sharingModal .modal-body .form-control {
+    width: 80%;
+}
+
+.members {
+    padding: 0 10px;
+}
+
+.members .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.members .info {
+    display: flex;
+    flex-direction: column;
+}
+
+.members .info .email {
+    font-size: 1.2rem;
+    color: #44546F
+}
+
+.members-list .member-role {
+    padding: 4px 7px;
+    border: 2px solid #d9dde8;
+    border-radius: 10px;
+    font-size: 1.3rem;
+}
+
+/* Suggestion */
+.suggestion-result {
+    display: block;
+    position: relative;
+}
+
+.suggestion-result:not(:has(.avatar)) {
+    display: none;
+}
+
+.suggestion-users {
+    position: absolute;
+    left: 7px;
+    width: calc(80% - 10px);
+    max-height: 256px;
+    margin: 4px;
+    padding: 4px;
+    overflow-y: auto;
+    border-radius: 3px;
+    background-color: #fff;
+    box-shadow:
+        0 0 0 1px #fff,
+        0 8px 12px #091e4226,
+        0 0 1px #091e424f;
+}
+
+.new-user-element {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.new-user-element:hover {
+    background-color: #f6f7fb;
+    cursor: pointer;
+}
+
+.new-user-element .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.new-user-element .info {
+    display: flex;
+    flex-direction: column;
 }
