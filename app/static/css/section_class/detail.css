@@ -534,3 +534,18 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+.invitation-options button {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    padding: 4px 6px;
+}
+
+.invitation-options .btn-accept {
+    border-color: #63E6BE;
+}
+
+.invitation-options .btn-reject {
+    border-color: #ee5858;
+}

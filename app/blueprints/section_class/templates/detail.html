@@ -12,6 +12,7 @@
             getMembers: "{{url_for('section_class.get_all_members', id=section_class.id)}}",
             searchUsers: "{{url_for('users.search')}}",
             shareToUser: "{{url_for('section_class.share_to_user', id=section_class.id)}}",
+            responseInvitation: "{{url_for('section_class.response_invitation', id=section_class.id)}}",
         }
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
@@ -21,18 +22,36 @@
 {% endblock %}
 
 {% block content %}
+    <input type="hidden" id="is-pending-user" value="{{section_class.is_pending}}">
     <div class="header">
-        <div class="content d-flex align-items-center">
+        <div class="content d-flex align-items-center {{'justify-content-between gap-20' if section_class.is_pending else ''}}">
             <h2>{{ section_class.name }}</h2>
             <input type="hidden" id="section-class-id" value="{{ section_class.id }}">
-            <div class="menu-item">
-                <div class="d-flex">
-                    <a href="{{url_for('section_class.section_class_exam', id=section_class.id)}}">
-                        <i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>
-                        <span>Kiểm tra</span>
-                    </a>
+            {% if not section_class.is_pending %}
+                <div class="menu-item">
+                    <div class="d-flex">
+                        <a href="{{url_for('section_class.section_class_exam', id=section_class.id)}}">
+                            <i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>
+                            <span>Kiểm tra</span>
+                        </a>
+                    </div>
                 </div>
-            </div>
+            {% else %}
+                <div class="d-flex align-items-center gap-10">
+                    <h3 class="m-b-0">Chủ học phần đã mời bạn vào lớp học phần này</h3>
+                    <div class="invitation-options">
+                        <button class="btn-accept" data-status="accept">
+                            <i class="fa-regular fa-circle-check" style="color: #63E6BE;"></i> Chấp nhận
+                        </button>
+                        <button class="btn-reject" data-status="reject"
+                            data-bs-custom-class="custom-tooltip red-tooltip"
+                            data-bs-toggle="tooltip"
+                            data-bs-title="Bạn sẽ không còn có thể truy cập vào lớp học phần này nữa">
+                            <i class="fa-solid fa-ban" style="color: #ee5858;"></i> Từ chối
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
     <div class="wrapper">
@@ -102,43 +121,47 @@
                     </span>
                 </div>
             </div>
-            <div class="options">
-                <button
-                    class="btn-share" 
-                    data-bs-toggle="modal"
-                    data-bs-target="#sharingModal">
-                    <i class="fa-solid fa-arrow-up-from-bracket m-r-5"></i>
-                    Chia sẻ
-                </button>
-                <a href="{{url_for('section_class.edit', id = section_class.id)}}">
-                    <i class="fa-solid fa-pen"></i>
-                </a>
-                <button>
-                    <i class="fa-solid fa-ellipsis"></i>
-                </button>
-                {% include 'partials/_sharing-modal.html' %}
-            </div>
+            {% if not section_class.is_pending %}
+                <div class="options">
+                    <button
+                        class="btn-share" 
+                        data-bs-toggle="modal"
+                        data-bs-target="#sharingModal">
+                        <i class="fa-solid fa-arrow-up-from-bracket m-r-5"></i>
+                        Chia sẻ
+                    </button>
+                    <a href="{{url_for('section_class.edit', id = section_class.id)}}">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <button>
+                        <i class="fa-solid fa-ellipsis"></i>
+                    </button>
+                    {% include 'partials/_sharing-modal.html' %}
+                </div>
+            {% endif %}
         </div>
 
         <!-- Danh sách các từ vựng -->
         <div class="vocabularies-block">
             <div class="d-flex justify-content-between align-items-center">
                 <h3>Thuật ngữ trong học phần này ({{section_class.vocabularies|length}})</h3>
-                <div class="options d-flex gap-20">
-                    <div class="view-options">
-                        <span class="active" data-view-option="all">Tất cả</span>
-                        <span data-view-option="stared">Gắn dấu sao</span>
+                {% if not section_class.is_pending %}
+                    <div class="options d-flex gap-20">
+                        <div class="view-options">
+                            <span class="active" data-view-option="all">Tất cả</span>
+                            <span data-view-option="stared">Gắn dấu sao</span>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" id="btn-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Thứ tự gốc
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item" data-order="original">Thứ tự gốc</li>
+                                <li class="dropdown-item" data-order="dictionary">Bảng chữ cái</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" id="btn-dropdown" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Thứ tự gốc
-                        </button>
-                        <ul class="dropdown-menu">
-                            <li class="dropdown-item" data-order="original">Thứ tự gốc</li>
-                            <li class="dropdown-item" data-order="dictionary">Bảng chữ cái</li>
-                        </ul>
-                    </div>
-                </div>
+                {% endif %}
             </div>
             <div class="wrapper">
                 {% for vocabulary in section_class.vocabularies %}
@@ -153,17 +176,21 @@
                                 {{ vocabulary["vietnamese"] }}
                             </span>
                             <div class="options">
-                                <button class="btn-star {{ 'active' if vocabulary['is_stared'] else '' }}"
-                                    data-url="{{url_for('vocabularies.update', id=vocabulary['id'])}}"
-                                    data-index="{{loop.index - 1}}">
-                                    <i class="fa-solid fa-star"></i>
-                                </button>
+                                {% if not section_class.is_pending %}
+                                    <button class="btn-star {{ 'active' if vocabulary['is_stared'] else '' }}"
+                                        data-url="{{url_for('vocabularies.update', id=vocabulary['id'])}}"
+                                        data-index="{{loop.index - 1}}">
+                                        <i class="fa-solid fa-star"></i>
+                                    </button>
+                                {% endif %}
                                 <button class="btn-speech" data-text="{{ vocabulary['english'] }}">
                                     <i class="fa-solid fa-volume-high"></i>
                                 </button>
-                                <button class="btn-edit" data-url="{{url_for('vocabularies.update', id=vocabulary['id'])}}">
-                                    <i class="fa-solid fa-pen"></i>
-                                </button>
+                                {% if not section_class.is_pending %}
+                                    <button class="btn-edit" data-url="{{url_for('vocabularies.update', id=vocabulary['id'])}}">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </button>
+                                {% endif %}
                             </div>
                         </div>
                     </div>

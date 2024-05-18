@@ -196,6 +196,7 @@ button:disabled {
 }
 
 .notification-item {
+	position: relative;
 	padding: 10px;
 }
 
@@ -214,6 +215,14 @@ button:disabled {
 .notification-item .message,
 .notification-item .section-class-name {
 	font-size: 1.3rem;
+}
+
+.notification-item .created-at {
+	position: absolute;
+	top: 12px;
+	right: 10px;
+	font-size: 1rem;
+	font-weight: 600;
 }
 
 /* Làm hiệu ứng nhấp nháy khi có thông báo mới */

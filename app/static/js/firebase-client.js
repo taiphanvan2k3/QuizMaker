@@ -67,13 +67,19 @@ const FirebaseClientModule = (function () {
                 limit(3)
             );
 
-            let isFirstTime = true;
             unsubscribeNotifications = onSnapshot(
                 notification_query,
                 async (snapshot) => {
-                    const notifications = snapshot.docs.map((doc) =>
-                        doc.data()
-                    );
+                    const notifications = snapshot.docs.map((doc) => {
+                        return {
+                            id: doc.id,
+                            ...doc.data(),
+                        };
+                    });
+
+                    console.log("notifications: ", notifications);
+                    if (notifications.length === 0) return;
+
                     const notificationDropDown = $(
                         ".btn-notification + .dropdown-menu"
                     );
@@ -83,6 +89,11 @@ const FirebaseClientModule = (function () {
                         ".dropdown-item-template .notification-item"
                     ).clone();
 
+                    const sectionClassDetailUrl = $(
+                        "#section-class-detail-url"
+                    ).val();
+
+                    let isShowBlink = false;
                     for (const notification of notifications) {
                         const notificationItemClone = notificationItem.clone();
 
@@ -101,7 +112,34 @@ const FirebaseClientModule = (function () {
                                 ),
                             ]);
 
+                            const createdAt = new Date(
+                                notification.created_at.seconds * 1000 +
+                                    notification.created_at.nanoseconds /
+                                        1000000
+                            );
                             const sender = senderDoc.data();
+                            const href =
+                                notification?.status === "reject"
+                                    ? "javascript:void(0)"
+                                    : sectionClassDetailUrl.replace(
+                                          "0",
+                                          `${notification.section_class_id}?notification_id=${notification.id}`
+                                      );
+
+                            notificationItemClone.attr("href", href);
+
+                            // Tô màu cho thông báo chưa đọc
+                            notificationItemClone.css(
+                                "background-color",
+                                notification.is_seen ? "" : "#fcf0db"
+                            );
+
+                            isShowBlink |= !notification.is_seen;
+
+                            notificationItemClone
+                                .find(".created-at")
+                                .text(CommonModule.GetTimeDiff(createdAt));
+                            
                             notificationItemClone
                                 .find(".sender-name")
                                 .text(sender.display_name);
@@ -120,10 +158,10 @@ const FirebaseClientModule = (function () {
                         }
                     }
 
-                    if (isFirstTime) {
-                        isFirstTime = false;
-                    } else {
+                    if (isShowBlink) {
                         $(".notification-blink").removeClass("dis-none");
+                    } else {
+                        $(".notification-blink").addClass("dis-none");
                     }
                 }
             );

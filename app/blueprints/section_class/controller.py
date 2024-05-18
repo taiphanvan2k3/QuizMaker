@@ -1,10 +1,10 @@
 from . import section_class_bp, env
 from . import model
-from ..utils.helpers import render_template_util
+from ..utils.helpers import render_template_util, create_thread_and_run
 from ..utils.algoliasearch import autocomplete
 from ..utils.openai import get_definition_gpt
 from ...middlewares import login_required
-from flask import request, jsonify, redirect, url_for
+from flask import request, jsonify, redirect, url_for, g
 from .entities.SectionClassCreateUpdate import SectionClassCreateUpdate
 
 
@@ -24,7 +24,7 @@ def index():
             title="Danh sách học phần",
             sections=model.get_all_section_classes(section_type),
             sectionType=section_type,
-            active_menu="section_class"
+            active_menu="section_class",
         )
     elif request.method == "POST":
         response_info = {}
@@ -61,7 +61,7 @@ def create_set():
                 env,
                 "create-edit.html",
                 title="Tạo học phần mới",
-                active_menu="section_class"
+                active_menu="section_class",
             )
         else:
             data = request.get_json()
@@ -134,6 +134,15 @@ def section_class_detail(id):
     * Description: View the detail of a section class
     """
     section_class = model.get_section_class_by_id(id)
+
+    # Lấy notification_id từ request
+    notification_id = request.args.get("notification_id")
+    if notification_id:
+        current_user = g.user_info
+        create_thread_and_run(
+            model.update_notification_status, (current_user["id"], notification_id)
+        )
+
     if section_class is None:
         return redirect(url_for("errors.not_found"))
     return render_template_util(
@@ -141,7 +150,7 @@ def section_class_detail(id):
         "detail.html",
         title=f"Học phần: {section_class.name}",
         section_class=section_class,
-        active_menu="section_class"
+        active_menu="section_class",
     )
 
 
@@ -206,12 +215,13 @@ def section_class_exam(id):
         title=f"Học phần: {section_class.name}",
         title_exam=f"Kiểm tra từ vựng: {section_class.name}",
         quizs=quizs,
-        active_menu="section_class"
+        active_menu="section_class",
     )
 
 
 # Các action liên quan đến members
 @section_class_bp.route("<id>/members", methods=["GET"])
+@login_required
 def get_all_members(id):
     """
     * Author: Phan Van Tai, created at: 16/05/2024
@@ -224,6 +234,7 @@ def get_all_members(id):
 
 
 @section_class_bp.route("<id>/share-to-user", methods=["POST"])
+@login_required
 def share_to_user(id):
     """
     * Author: Phan Van Tai, created at: 16/05/2024
@@ -232,6 +243,21 @@ def share_to_user(id):
     try:
         data = request.form
         model.share_to_user(id, data["email"])
+        return jsonify({"code": 200})
+    except Exception as e:
+        return jsonify({"code": 500, "message": str(e)})
+
+
+@section_class_bp.route("<id>/response-invitation", methods=["POST"])
+@login_required
+def response_invitation(id):
+    """
+    * Author: Phan Van Tai, created at: 18/05/2024
+    * Description: Response to an invitation to join a section class
+    """
+    try:
+        is_accept = request.form["status"]
+        model.response_invitation(id, is_accept)
         return jsonify({"code": 200})
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
