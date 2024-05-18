@@ -7,6 +7,7 @@ from datetime import datetime
 import pytz
 import random
 from ..utils.openai import get_definition_gpt
+from ..utils.helpers import get_time_diff
 
 db = initialize_firestore()
 section_class_ref = db.collection("section_class")
@@ -140,7 +141,7 @@ def update_section_class(section_class: SectionClassCreateUpdate):
 
 def get_section_class_by_id(section_class_id: str):
     section_class_doc = section_class_ref.document(section_class_id).get(
-        ["name", "description", "created_at", "is_public", "members"]
+        ["name", "description", "created_at", "is_public", "members", "owner"]
     )
     if not section_class_doc.exists:
         return None
@@ -173,29 +174,27 @@ def get_section_class_by_id(section_class_id: str):
         vocab_data = vocab.to_dict()
         vocabularies.append({"id": vocab.id, **vocab_data})
 
-    current_user = g.user_info
+    owner_info = section_class_doc.get("owner").get().to_dict()
     created_at = section_class_doc.get("created_at")
 
-    # Tìm độ chênh lệch về thời gian hiện tại với created_at
-    time_diff = datetime.now(timezone) - created_at
-    if time_diff.days <= 31:
-        time_diff = f"{time_diff.days} ngày trước"
-    elif time_diff.days <= 365:
-        time_diff = f"{time_diff.days // 30} tháng trước"
-    else:
-        time_diff.days = f"{time_diff.days // 365} năm trước"
+    is_pending = current_user["email"] not in section_class_doc.get("members")
 
+    # Tìm độ chênh lệch về thời gian hiện tại với created_at
     return SectionClassDetailDto(
         section_class_id,
         section_class_doc.get("name"),
         section_class_doc.get("description"),
         owner={
-            "display_name": current_user["display_name"],
-            "picture": current_user["picture"],
+            "display_name": owner_info["display_name"],
+            "picture": owner_info["picture"],
         },
-        created_at={"actual": created_at, "simple": time_diff},
+        created_at={
+            "actual": created_at,
+            "simple": get_time_diff(created_at, datetime.now(timezone)),
+        },
         vocabularies=vocabularies,
         is_public=section_class_doc.get("is_public"),
+        is_pending=is_pending,
     )
 
 
@@ -235,23 +234,13 @@ def get_recent_section_classes():
     # Truy vấn tất cả các section_class mà người dùng là thành viên
     query = section_class_ref.where("members", "array_contains", email).stream()
 
-    user_ref = db.collection("users").document(current_user["id"])
-    user_doc = user_ref.get()
-
-    if user_doc.exists:
-        user_data = user_doc.to_dict()
-        display_name = user_data.get("display_name", "Unknown")
-        picture = user_data.get("picture", "default_picture.jpg")
-    else:
-        display_name = "Unknown"
-        picture = "default_picture.jpg"
-
     sections = []
     for section in query:
         section_data = section.to_dict()
+        owner = section_data["owner"].get()
         section_id = section.id
-        section_data["display_name"] = display_name
-        section_data["picture"] = picture
+        section_data["display_name"] = owner.get("display_name")
+        section_data["picture"] = owner.get("picture")
         section_data["id"] = section_id
 
         # Lấy thông tin last_accessed từ subcollection members_access_logs
@@ -336,5 +325,50 @@ def share_to_user(id, email):
                 "section_class_name": section_class_name,
                 "from": sender_ref,
                 "created_at": datetime.now(timezone),
+                "is_seen": False,
             }
         )
+
+
+# Update status của notification từ chưa xem thành đã xem
+def update_notification_status(user_id, notification_id):
+    notification_ref = (
+        db.collection("user_notifications")
+        .document(user_id)
+        .collection("notifications")
+        .document(notification_id)
+    )
+    notification_ref.update({"is_seen": True})
+
+
+def response_invitation(section_class_id, is_accept):
+    current_user = g.user_info
+    section_class_ref = db.collection("section_class").document(section_class_id)
+
+    # Xoá user này khỏi danh sách pending_members, đồng thời thêm vào members neu is_accept = True
+    section_class_ref.update(
+        {
+            "pending_members": firestore.ArrayRemove([current_user["email"]]),
+        }
+    )
+
+    if is_accept == "accept":
+        section_class_ref.update(
+            {
+                "members": firestore.ArrayUnion([current_user["email"]]),
+            }
+        )
+    else:
+        # Update notification là reject để lát không thể vào lại lớp học phần này nữa
+        notifications_ref = (
+            db.collection("user_notifications")
+            .document(current_user["id"])
+            .collection("notifications")
+        )
+        query = notifications_ref.where(
+            filter=("section_class_id", "==", section_class_id)
+        ).where(filter=("is_seen", "==", True))
+
+        results = query.stream()
+        for result in results:
+            result.reference.update({"status": "reject"})

@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    SectionClassDetailModule.Init();
     SectionClassDetailModule.InitEvents();
 });
 
@@ -37,6 +38,15 @@ const SectionClassDetailModule = (function () {
     };
 
     let debounceTimeout;
+
+    const Init = function () {
+        const tooltipTriggerList = document.querySelectorAll(
+            '[data-bs-toggle="tooltip"]'
+        );
+        [...tooltipTriggerList].map(
+            (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+        );
+    };
 
     const InitEvents = function () {
         PreprocessingData();
@@ -84,7 +94,6 @@ const SectionClassDetailModule = (function () {
 
         $(document).on("click", function () {
             if (previousEditedVocabulary) {
-                console.log("document click");
                 HandleDisableEdit();
             }
         });
@@ -97,7 +106,6 @@ const SectionClassDetailModule = (function () {
 
         $(".vocabulary-item .btn-edit").on("click", function (e) {
             // trigger document click event để disable chế độ edit trước đó
-            console.log("btn-edit click");
             $(document).trigger("click");
             HandleEditVocabulary($(this));
             e.stopPropagation();
@@ -134,6 +142,10 @@ const SectionClassDetailModule = (function () {
 
         $(".btn-submit-share").prop("disabled", true);
         $(".btn-submit-share").on("click", HandleSharingToUser);
+
+        $(".invitation-options button").on("click", function () {
+            HandleResponseInvitation($(this));
+        });
     };
 
     const HandleNextVocab = function ($btn) {
@@ -157,9 +169,9 @@ const SectionClassDetailModule = (function () {
                 const vocab = currentVocabularies[currentVocabIndex + 1];
                 $(".front p").text(vocab.english);
                 $(".back p").text(vocab.vietnamese);
-                $(".btn-speech").data("text", vocab.english);
+                $("#card .btn-speech").data("text", vocab.english);
                 if ($("#is-auto-audio").is(":checked")) {
-                    GetAudioFromText(vocab.english);
+                    GetAudioFromText($("#card .btn-speech"), vocab.english);
                 }
             }
             currentVocabIndex++;
@@ -253,6 +265,7 @@ const SectionClassDetailModule = (function () {
      */
     const GetAudioFromText = function ($btn, text) {
         try {
+            console.log($btn);
             $btn.addClass("active");
             const audio = new SpeechSynthesisUtterance(text);
             audio.lang = "en-US";
@@ -717,7 +730,58 @@ const SectionClassDetailModule = (function () {
         }
     };
 
+    /**
+     * Phản hồi lại lời mời tham gia lớp học
+     *
+     * Author: TaiPV, created at 14/05/2024
+     * @param {JQueryElement} $btn: Accept or Decline button
+     */
+    const HandleResponseInvitation = function ($btn) {
+        try {
+            const status = $btn.data("status");
+            $.ajax({
+                url: urls.responseInvitation,
+                data: { status: status },
+                type: "POST",
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                    if (response.code === 200) {
+                        if (status === "accept") {
+                            CommonModule.ShowToast(
+                                "success",
+                                "Chúc mừng bạn đã tham gia lớp học thành công."
+                            );
+
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1500);
+                        } else {
+                            CommonModule.ShowToast(
+                                "info",
+                                "Bạn đã từ chối lời mời. <br/> Sẽ chuyển bạn về trang chủ sau 2s."
+                            );
+
+                            setTimeout(function () {
+                                window.location.href = "/";
+                            }, 2000);
+                        }
+                    } else {
+                        CommonModule.ShowToast("error", response.message);
+                    }
+                },
+                error: function () {
+                    CommonModule.ShowToast(
+                        "error",
+                        "Có lỗi xảy ra khi gửi yêu cầu."
+                    );
+                },
+            });
+        } catch (error) {}
+    };
+
     return {
+        Init: Init,
         InitEvents: InitEvents,
     };
 })();

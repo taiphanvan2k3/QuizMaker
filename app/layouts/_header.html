@@ -15,7 +15,7 @@
         margin-top: -12px;
     }
 
-    .left-content .web-name span {
+    .left-content .web-name a {
         color: #4255ff;
         font-weight: 700;
         font-size: 26px;
@@ -25,7 +25,7 @@
 <div class="content d-flex align-items-center">
     <div class="left-content">
         <div class="web-name">
-            <span>QuizMaker</span>
+            <a href="/">QuizMaker</a>
         </div>
         <div class="navigation-tabs">
             <ul class="items">
@@ -74,7 +74,7 @@
             <ul class="dropdown-menu dropdown-menu-end custom-scroll">
             </ul>
             <div class="dropdown-item-template dis-none">
-                <div class="notification-item d-flex align-items-center gap-10">
+                <a class="notification-item d-flex align-items-center gap-10">
                     <img class="avatar" src="" alt="" />
                     <div class="info d-flex flex-column">
                         <b class="sender-name"></b>
@@ -83,8 +83,10 @@
                             <b class="section-class-name"></b>
                         </div>
                     </div>
-                </div>
+                    <span class="created-at"></span>
+                </a>
             </div>
+            <input type="hidden" id="section-class-detail-url" value="{{url_for('section_class.section_class_detail', id=0)}}">
         </div>
         <span id="user-name">{{g.user_info.display_name if g.user_info else "Guest"}}</span>
         <div class="btn-group m-l-10 m-r-10">

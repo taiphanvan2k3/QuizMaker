@@ -1,4 +1,5 @@
 from flask import render_template_string, url_for, g
+import threading
 import os
 
 
@@ -37,3 +38,30 @@ def create_environment(file_path):
 def create_folder_if_not_exists(folder_path):
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
+
+
+def get_time_diff(start, end):
+    time_diff = end - start
+    if time_diff.days == 0:
+        hours = time_diff.seconds // 3600
+        if hours == 0:
+            minutes = time_diff.seconds // 60
+            if minutes == 0:
+                time_diff = "vài giây trước"
+            else:
+                time_diff = f"{minutes} phút trước"
+        else:
+            time_diff = f"{hours} giờ trước"
+    elif time_diff.days <= 31:
+        time_diff = f"{time_diff.days} ngày trước"
+    elif time_diff.days <= 365:
+        time_diff = f"{time_diff.days // 30} tháng trước"
+    else:
+        time_diff.days = f"{time_diff.days // 365} năm trước"
+    return time_diff
+
+
+def create_thread_and_run(func, args):
+    thread = threading.Thread(target=func, args=args)
+    thread.start()
+    return thread
