@@ -2,8 +2,15 @@
 - This project is a big exercise for a Python course at my school.
 - It is a web application that is built on the Flask framework. The app is a platform for students to create section classes and in each section class, students can create vocabularies for themselves and can practice through using flashcards or playing games.
 
-Demo:
+## 2. My website:
+- Deployed on Python Anywhere: https://taiphanvan2403.pythonanywhere.com/
 
+- Deployed on Render: https://quizmakerrender.onrender.com/
+
+Due to the free plan, so the above websites may be slow to load. Please wait for a while.
+
+
+#### If you want to see demo video, it is below right here:
 https://github.com/taiphanvan2k3/QuizMaker/assets/108993284/b1ce6610-f825-4d73-a2af-417f797d91b5
 
 
