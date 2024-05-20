@@ -4,7 +4,7 @@ client = SearchClient.create("8SYE9PPQXH", "320f3dea5088a0f273a764527b790978")
 vocab_index = client.init_index("vocab_en_vi")
 settings = {"searchableAttributes": ["word", "translation"]}
 vocab_index.set_settings(settings)
-
+    
 # User index
 user_index = client.init_index("users")
 user_settings = {
