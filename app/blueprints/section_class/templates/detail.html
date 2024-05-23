@@ -13,6 +13,7 @@
             searchUsers: "{{url_for('users.search')}}",
             shareToUser: "{{url_for('section_class.share_to_user', id=section_class.id)}}",
             responseInvitation: "{{url_for('section_class.response_invitation', id=section_class.id)}}",
+            doExam: "{{url_for('section_class.check_section_class_exam', id=section_class.id)}}",
         }
     </script>
     <script src="{{url_for('static', filename='js/section_class/detail.js')}}"></script>
@@ -30,7 +31,7 @@
             {% if not section_class.is_pending %}
                 <div class="menu-item">
                     <div class="d-flex">
-                        <a href="{{url_for('section_class.section_class_exam', id=section_class.id)}}">
+                        <a href="#!" class="do-exam">
                             <i class="fa-duotone fa-book-copy fa-xl m-r-10" style="--fa-primary-color: #4255ff; --fa-secondary-color: #4255ff;"></i>
                             <span>Kiểm tra</span>
                         </a>
