@@ -28,5 +28,10 @@
                 {% endfor %}
             </div>
         </div>
+    {% else %}
+        <div class="recent-block empty-section">
+            <span class="recent-title">Chào mừng bạn QuizMaker - một trang web giúp học từ vựng tiếng Anh hiệu quả</span>
+            <p>Hãy <a href="{{url_for('section_class.create_set')}}" class="link">tạo học phần</a> để nâng cao vốn từ vựng tiếng Anh của mình nào.</p>
+        </div>
     {% endif %}
 {% endblock %}

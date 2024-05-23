@@ -12,3 +12,8 @@ def server_error(message):
     return render_template_util(
         env, "server_error.html", title="Error page", message=message
     )
+
+
+@errors_bp.route("/coming-soon")
+def coming_soon():
+    return render_template_util(env, "coming_soon.html", title="Coming soon")
