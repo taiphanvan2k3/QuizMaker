@@ -146,6 +146,10 @@ const SectionClassDetailModule = (function () {
         $(".invitation-options button").on("click", function () {
             HandleResponseInvitation($(this));
         });
+
+        $('.do-exam').on("click", function () {
+            CheckAndNavigateDoExam();
+        });
     };
 
     const HandleNextVocab = function ($btn) {
@@ -779,6 +783,38 @@ const SectionClassDetailModule = (function () {
             });
         } catch (error) {}
     };
+
+    /**
+     * Redirect to do exam page
+     *
+     * Author: ManhTD, created at 23/05/2024
+     */
+        const CheckAndNavigateDoExam = function () {
+            try {
+                $.ajax({
+                    url: urls.doExam,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            window.location.href = response.redirect_url;
+                        } else {
+                            CommonModule.ShowToast("error", response.error);
+                        }
+                    },
+                    error: function (response) {
+                        if (response.status == 400) {
+                            CommonModule.ShowToast("error", response.responseJSON.error);
+                        } else {
+                            CommonModule.ShowToast(
+                                "error",
+                                "Có lỗi xảy ra khi gửi yêu cầu."
+                            );
+                        }
+                    },
+                });
+            } catch (error) {}
+        };
 
     return {
         Init: Init,

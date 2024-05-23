@@ -197,6 +197,19 @@ def get_definition_route():
     except Exception as e:
         return jsonify({"code": 500, "message": str(e)})
 
+@section_class_bp.route("exam/check/<id>", methods=["GET"])
+@login_required
+def check_section_class_exam(id):
+    """
+    * Author: Tran Dinh Manh, created at: 23/05/2024
+    * Description: Check if the section class has enough vocabularies to create an exam.
+    """
+    section_class = model.get_section_class_by_id(id)
+    if section_class is None:
+        return jsonify({"error": "Không tìm thấy lớp học."}), 404
+    if len(section_class.vocabularies) < 4:
+        return jsonify({"error": "Không thể tạo bài kiểm tra. Số lượng từ vựng ít hơn 4."}), 400
+    return jsonify({"success": True, "redirect_url": url_for('section_class.section_class_exam', id=id)}), 200
 
 @section_class_bp.route("exam/<id>", methods=["GET"])
 @login_required
