@@ -1,14 +1,25 @@
 .recent-block {
-    margin-left: auto;
-    margin-right: auto;
     margin: 50px auto;
     max-width: 130rem;
+}
+
+.recent-block.empty-section {
+    margin-left: 48px;
+    text-align: center;
 }
 
 .recent-title {
     color: var(--gray-800-gray-200);
     font-weight: 600;
     font-size: 2rem;
+}
+
+.recent-block .link {
+    font-weight: 600;
+    font-size: 1.4rem;
+}
+.recent-block .link:hover {
+    color: #ceac35;
 }
 
 .table-recent {

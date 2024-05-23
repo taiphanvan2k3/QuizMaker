@@ -15,25 +15,38 @@
 
 {% block content %}
     <div class="wrapper">
-        <h1 class="title">Danh sách các lớp học phần của bạn</h1>
-        <div class="header">
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  {{"Tất cả" if sectionType == "all" else "Tự tạo"}}
-                </button>
-                <img src="{{url_for('static', filename='images/loading.gif')}}" alt="" id="loading-icon">
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" data-val="all">Tất cả</a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" data-val="created-by-self">Tự tạo</a>
-                    </li>
-                </ul>
+        {% if sections.items()|length > 0 %}
+            <h1 class="title">Danh sách các lớp học phần của bạn</h1>
+            <div class="header">
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{"Tất cả" if sectionType == "all" else "Tự tạo"}}
+                    </button>
+                    <img src="{{url_for('static', filename='images/loading.gif')}}" alt="" id="loading-icon">
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" data-val="all">Tất cả</a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" data-val="created-by-self">Tự tạo</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div id="section-list">
-            {% include 'partials/_sectionsList.html' %}
-        </div>
+            <div id="section-list">
+                {% include 'partials/_sectionsList.html' %}
+            </div>
+        {% else %}
+            <div class="empty-section">
+                <h1 class="title">Danh sách các lớp học phần của bạn</h1>
+                <p class="empty-section__text">
+                    Bạn chưa tạo lớp học phần nào.
+                    <a href="{{url_for('section_class.create_set')}}" class="link">
+                        <i class="fa-light fa-hand-point-right fa-bounce"></i>
+                        Tạo lớp học phần thôi.
+                    </a>
+                </p>
+            </div>
+        {% endif %}
     </div>
 {% endblock  %}
